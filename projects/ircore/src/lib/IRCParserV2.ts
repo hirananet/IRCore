@@ -79,6 +79,7 @@ export class IRCParserV2 {
         const chnl = new Channel(pmChnl);
         chnlList.push(chnl);
       });
+      WhoIsHandler.addWhoisPartial(parsedMessage.partials[3], 'channelList', chnlList);
       ChannelListHandler.setChannelList(parsedMessage.partials[3], chnlList);
       return;
     }
