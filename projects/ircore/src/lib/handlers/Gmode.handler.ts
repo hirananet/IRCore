@@ -3,6 +3,7 @@ import { EventEmitter } from '@angular/core';
 /*
   Clase para manejar los request en +g
 */
+// @dynamic
 export class GmodeHandler {
 
   public static readonly onPrivateRequest: EventEmitter<string> = new EventEmitter<string>();

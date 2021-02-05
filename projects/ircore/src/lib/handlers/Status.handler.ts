@@ -5,6 +5,7 @@ import { NickChange } from '../dto/NickChange';
 /*
   Clase para manejar los cambios de estado del usuario, como cuando es banneado, o kickeado de un canal.
 */
+// @dynamic
 export class StatusHandler {
 
   public static readonly nickAlreadyInUse: EventEmitter<string> = new EventEmitter<string>();

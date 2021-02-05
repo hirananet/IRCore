@@ -4,6 +4,7 @@ import { Who } from './../dto/Who';
 /*
   Clase para manejar el estado de los usuarios (si está away, es netop, de donde se conecta, etc.)
 */
+// @dynamic
 export class WhoHandler {
 
   public static readonly usersWho: UsersWhos = {};

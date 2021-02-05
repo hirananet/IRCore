@@ -4,6 +4,7 @@ import { WhoIsData } from '../dto/WhoIs';
 /*
   Clase para manejar el Whois de un usuario.
 */
+// @dynamic
 export class WhoIsHandler {
 
   private static whoisdatas: WhoDatas = {};

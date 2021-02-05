@@ -4,6 +4,7 @@ import { ChannelInfo } from '../dto/ChannelInfo';
 /*
   Clase para manejar el comando /list
 */
+// @dynamic
 export class ListHandler {
 
   private static channels: ChannelInfo[] = [];

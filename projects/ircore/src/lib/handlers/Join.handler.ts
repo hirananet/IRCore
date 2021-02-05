@@ -1,6 +1,7 @@
 import { EventEmitter } from '@angular/core';
 import { Join } from './../dto/Join';
 
+// @dynamic
 export class JoinHandler {
   public static readonly joinResponse: EventEmitter<Join> = new EventEmitter<Join>();
 

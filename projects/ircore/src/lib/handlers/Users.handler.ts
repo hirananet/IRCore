@@ -4,6 +4,7 @@ import { UserInChannel } from '../dto/UserInChannel';
 /*
   Clase para manejar los usuarios que hay en un canal (mensaje inicial de usuarios por names)
 */
+// @dynamic
 export class UsersHandler {
 
   private static readonly usersInChannel: ChannelUserList = {};

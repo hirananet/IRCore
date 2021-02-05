@@ -4,6 +4,7 @@ import { Away } from './../dto/Away';
 /**
  * clase para manejar los eventos de ignorar.
  */
+// @dynamic
 export class IgnoreHandler {
   public static readonly ignoreResponse: EventEmitter<Away> = new EventEmitter<Away>();
 

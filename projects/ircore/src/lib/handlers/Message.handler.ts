@@ -6,7 +6,7 @@ import { ValidRegex } from '../utils/validRegex';
 /**
  * Clase para manejar la recepción de mensajes privados y de canal.
  */
-
+// @dynamic
 export class MessageHandler {
 
   public static readonly messageResponse: EventEmitter<IndividualMessage> = new EventEmitter<IndividualMessage>();

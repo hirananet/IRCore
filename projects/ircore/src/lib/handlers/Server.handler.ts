@@ -1,6 +1,7 @@
 import { EventEmitter } from '@angular/core';
 import { IRCMessage } from '../utils/IRCMessage.util';
 
+// @dynamic
 export class ServerHandler {
   public static readonly serverResponse: EventEmitter<IRCMessage> = new EventEmitter<IRCMessage>();
   public static readonly serverNoticeResponse: EventEmitter<IRCMessage> = new EventEmitter<IRCMessage>();

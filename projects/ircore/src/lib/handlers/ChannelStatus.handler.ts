@@ -4,6 +4,7 @@
 
 import { EventEmitter } from '@angular/core';
 
+// @dynamic
 export class ChannelStatusHandler {
 
   private static readonly channelsTopics: ChannelsTopic = {};

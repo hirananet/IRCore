@@ -1,3 +1,4 @@
+// @dynamic
 export class ValidRegex {
 
   public static channelRegex() {

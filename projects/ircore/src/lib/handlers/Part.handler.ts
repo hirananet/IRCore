@@ -1,6 +1,7 @@
 import { Part } from './../dto/Part';
 import { EventEmitter } from '@angular/core';
 
+// @dynamic
 export class PartHandler {
   public static readonly partResponse: EventEmitter<Part> = new EventEmitter<Part>();
 

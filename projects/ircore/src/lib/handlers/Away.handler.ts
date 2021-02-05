@@ -4,6 +4,7 @@ import { EventEmitter } from '@angular/core';
 /**
  * Handler de mensajes de away
  */
+// @dynamic
 export class AwayHandler {
 
   public static readonly awayResponse: EventEmitter<Away> = new EventEmitter<Away>();

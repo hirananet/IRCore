@@ -1,6 +1,7 @@
 import { EventEmitter } from '@angular/core';
 import { KickInfo } from '../dto/KickInfo';
 
+// @dynamic
 export class KickHandler {
 
   public static readonly kicked: EventEmitter<KickInfo> = new EventEmitter<KickInfo>();

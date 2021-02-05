@@ -5,7 +5,7 @@ import { ValidRegex } from '../utils/validRegex';
 /**
  * Clase para gestionar los cambios de modos en un canal (sobre un usuario)
  */
-
+// @dynamic
 export class ModeHandler {
 
   public static readonly modeChange: EventEmitter<NewMode> = new EventEmitter<NewMode>();

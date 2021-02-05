@@ -5,6 +5,7 @@ import { Channel } from '../dto/Channel';
   Clase para manejar los canales que tiene un usuario.
   Lista de canales que trae el whois de un usuario o el mensaje inicial
 */
+// @dynamic
 export class ChannelListHandler {
 
   private static uChannelList: UserChannelList = {};
