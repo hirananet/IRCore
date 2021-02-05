@@ -35,9 +35,9 @@ export class Author<t> {
   constructor(user: t) {
     let imageURL = AvatarHelper.getAvatarURL();
     if(typeof user == 'string') {
-      this.image = imageURL + '/avatar?usr=' + user;
+      this.image = imageURL + user;
     } else {
-      this.image = imageURL + '/avatar?usr=' + (user as any).nick;
+      this.image = imageURL + (user as any).nick;
     }
     this.user = user;
   }
