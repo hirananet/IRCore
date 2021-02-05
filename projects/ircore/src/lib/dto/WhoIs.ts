@@ -15,26 +15,54 @@ export class WhoIsData {
 
   public getLastLogin(): string {
     const date = new Date(parseInt(this.lastLogin, 10) * 1000);
-    return date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear() + ' ' + date.getHours() + ':' + date.getMinutes();
+    let hs: any = date.getHours();
+    if(hs < 10) {
+      hs = '0' + hs;
+    }
+    let mins: any = date.getMinutes();
+    if(mins < 10) {
+      mins = '0' + mins;
+    }
+    let day: any = date.getDate();
+    if(day < 10) {
+      day = '0'+day;
+    }
+    let month: any = (date.getMonth() + 1);
+    if(month < 10) {
+      month = '0'+month;
+    }
+    return day + '/' + month + '/' + date.getFullYear() + ' ' + hs + ':' + mins;
   }
 
   public getIdle(): string {
     let out = '';
     let idle = this.idle;
     if (idle >= 60) {
-      out = (this.idle % 60) + 's';
+      let secs: any = (this.idle % 60);
+      if(secs < 10) {
+        secs = '0' + secs;
+      }
+      out = secs + 's';
       idle = Math.floor(idle / 60);
     } else {
       return this.idle + 's';
     }
     if (idle >= 60) {
-      out = (this.idle % 60) + 'm ' + out;
+      let mins: any = (idle % 60);
+      if(mins < 10) {
+        mins = '0' + mins;
+      }
+      out = mins + 'm ' + out;
       idle = Math.floor(idle / 60);
     } else {
       return idle + 'm ' + out;
     }
     if (idle >= 24) {
-      out = (this.idle % 24) + 'h ' + out;
+      let hs: any = (idle % 24);
+      if(hs < 10) {
+        hs = '0' + hs;
+      }
+      out = hs + 'h ' + out;
       idle = Math.floor(idle / 24);
     } else {
       return idle + 'h ' + out;
