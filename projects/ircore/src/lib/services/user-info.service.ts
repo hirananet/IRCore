@@ -31,4 +31,5 @@ export class UserInfoService implements OnNickChanged {
       this.actualNick = nick.newNick;
     }
   }
+
 }

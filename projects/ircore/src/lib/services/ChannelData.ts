@@ -1,3 +1,4 @@
+import { AvatarHelper } from './../helpers/avatar.helper';
 import { MessageWithMetadata } from './../utils/PostProcessor';
 import { User } from '../dto/User';
 
@@ -32,13 +33,12 @@ export class Author<t> {
   image: string;
 
   constructor(user: t) {
-    // if(typeof user == 'string') {
-    //   this.image = environment.hiranaTools + '/avatar?usr=' + user;
-    // } else {
-    //   // typeof User
-    //   this.image = environment.hiranaTools + '/avatar?usr=' + (user as any).nick;
-    // }
-    alert('fixme #1');
+    let imageURL = AvatarHelper.getAvatarURL();
+    if(typeof user == 'string') {
+      this.image = imageURL + '/avatar?usr=' + user;
+    } else {
+      this.image = imageURL + '/avatar?usr=' + (user as any).nick;
+    }
     this.user = user;
   }
 }

@@ -61,3 +61,6 @@ export * from './lib/utils/Time.util';
 export * from './lib/utils/UModes.utils';
 export * from './lib/utils/validRegex';
 export * from './lib/utils/WebSocket.util';
+
+/** Helpers */
+export * from './lib/helpers/avatar.helper';
