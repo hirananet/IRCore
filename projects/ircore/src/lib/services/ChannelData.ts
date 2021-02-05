@@ -1,5 +1,4 @@
 import { MessageWithMetadata } from './../utils/PostProcessor';
-import { environment } from 'src/environments/environment';
 import { User } from '../dto/User';
 
 export class ChannelData {
@@ -33,12 +32,13 @@ export class Author<t> {
   image: string;
 
   constructor(user: t) {
-    if(typeof user == 'string') {
-      this.image = environment.hiranaTools + '/avatar?usr=' + user;
-    } else {
-      // typeof User
-      this.image = environment.hiranaTools + '/avatar?usr=' + (user as any).nick;
-    }
+    // if(typeof user == 'string') {
+    //   this.image = environment.hiranaTools + '/avatar?usr=' + user;
+    // } else {
+    //   // typeof User
+    //   this.image = environment.hiranaTools + '/avatar?usr=' + (user as any).nick;
+    // }
+    alert('fixme #1');
     this.user = user;
   }
 }
