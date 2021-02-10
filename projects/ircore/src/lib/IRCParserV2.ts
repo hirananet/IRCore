@@ -184,7 +184,6 @@ export class IRCParserV2 {
 
     // 322 canal de lista de canales
     if (parsedMessage.code === '322') {
-      console.log('CANAL', parsedMessage);
       const body = parsedMessage.body.split(']');
       ListHandler.addChannels(new ChannelInfo(parsedMessage.partials[3], body[1], body[0].replace('[' , ''), parseInt(parsedMessage.partials[4])));
       return;
