@@ -52,7 +52,7 @@ export class IRCoreService {
     this.sendRaw('PRIVMSG NickServ identify ' + password);
   }
 
-  public serverPass(user: string, password: string, apodo: string) {
+  public serverPass(user: string, password: string) {
     this.sendRaw('PASS ' + user + ':' + password);
   }
 

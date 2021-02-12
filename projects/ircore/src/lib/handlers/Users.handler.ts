@@ -16,7 +16,12 @@ export class UsersHandler {
   }
 
   public static getChannelOfMessage(message: string) {
-    return /(=|@)([^:]+):/.exec(message)[2].trim();
+    const messages = /(=|@|\*)([^:]+):/.exec(message);
+    if(messages && messages.length > 2) {
+      return messages[2].trim();
+    } else {
+      console.error('GCOM, ', message);
+    }
   }
 
   public static getUsersInChannel(channel: string): UserInChannel[] {
