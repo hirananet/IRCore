@@ -104,8 +104,10 @@ https://github.com/hirananet/IRCore/blob/main/projects/ircore/src/lib/handlers/L
 
 Handle the /list response command, and saving static array with list of channels, additionally have event to announce a new list.
 
-```public static readonly channelListCreated: EventEmitter<ChannelInfo[]> = new EventEmitter<ChannelInfo[]>();```
-```public static getChannelList(): ChannelInfo[]```
+```
+public static readonly channelListCreated: EventEmitter<ChannelInfo[]> = new EventEmitter<ChannelInfo[]>();
+public static getChannelList(): ChannelInfo[]
+```
 
 #### StatusHandler
 
