@@ -271,9 +271,9 @@ export class ChannelsService implements OnJoin, OnPart, OnKick, OnUserList, OnCh
       const idx = chnl.users.findIndex(user => user.nick === data.user.nick);
       if (idx >= 0) {
         chnl.users.splice(idx, 1);
+        this.membersChanged.emit({channel: chnl.name, users: chnl.users});
+        this.sendSpecialMSG(chnl, data.user.nick + ' se desconectó de la red.' );
       }
-      this.membersChanged.emit({channel: chnl.name, users: chnl.users});
-      this.sendSpecialMSG(chnl, data.user.nick + ' se desconectó de la red.' );
     });
   }
 
