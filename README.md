@@ -13,3 +13,11 @@ ng build IRCore --prod
 
 cd dist/ircore
 npm publish
+
+## Docs:
+
+https://github.com/hirananet/IRCore/blob/main/projects/ircore/README.md
+
+## Example of use:
+
+https://github.com/hirananet/HiraClient/tree/main/web-client
