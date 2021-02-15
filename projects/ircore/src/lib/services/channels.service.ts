@@ -1,3 +1,4 @@
+import { OnQuit, QuitHandler } from './../handlers/Quit.handler';
 import { Time } from './../utils/Time.util';
 import { ModeHandler } from './../handlers/Mode.handler';
 import { IndividualMessage, IndividualMessageTypes } from './../dto/IndividualMessage';
@@ -25,6 +26,7 @@ import { NewMode } from '../dto/NewMode';
 import { UModes } from '../utils/UModes.utils';
 import { PostProcessor } from '../utils/PostProcessor';
 import { ModeratedHandler } from '../handlers/Moderated.handler';
+import { Quit } from '../dto/Quit';
 
 /**
  * Servicio para gestionar mis canales y los usuarios en esos canales
@@ -32,7 +34,7 @@ import { ModeratedHandler } from '../handlers/Moderated.handler';
 @Injectable({
   providedIn: 'root'
 })
-export class ChannelsService implements OnJoin, OnPart, OnKick, OnUserList, OnChannelList, OnNickChanged, OnTopicUpdate, OnMessageReceived {
+export class ChannelsService implements OnJoin, OnPart, OnKick, OnUserList, OnChannelList, OnNickChanged, OnTopicUpdate, OnMessageReceived, OnQuit {
 
   public readonly listChanged: EventEmitter<ChannelData[]> = new EventEmitter<ChannelData[]>();
   public readonly messagesReceived: EventEmitter<GenericMessage> = new EventEmitter<GenericMessage>();
@@ -44,6 +46,7 @@ export class ChannelsService implements OnJoin, OnPart, OnKick, OnUserList, OnCh
 
   constructor(private userSrv: UserInfoService) {
     // Subscribe to events
+    QuitHandler.setHandler(this);
     JoinHandler.setHandler(this);
     KickHandler.setHandler(this);
     PartHandler.setHandler(this);
@@ -260,6 +263,15 @@ export class ChannelsService implements OnJoin, OnPart, OnKick, OnUserList, OnCh
       oldUsr.nick = nick.newNick;
       this.membersChanged.emit({channel: chnl.name, users: chnl.users});
       this.sendSpecialMSG(chnl, nick.oldNick + ' se cambió el nick a ' + nick.newNick);
+    });
+  }
+
+  onQuit(data: Quit) {
+    this.channels.forEach((chnl: ChannelData) => {
+      const idx = chnl.users.findIndex(user => user.nick === data.user.nick);
+      if (idx >= 0) {
+        chnl.users.splice(idx, 1);
+      }
     });
   }
 
