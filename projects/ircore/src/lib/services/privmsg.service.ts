@@ -1,6 +1,8 @@
 import { EventEmitter, Injectable } from '@angular/core';
 import { IndividualMessage, IndividualMessageTypes } from '../dto/IndividualMessage';
+import { NickChange } from '../dto/NickChange';
 import { MessageHandler, OnMessageReceived } from '../handlers/Message.handler';
+import { OnNickChanged, StatusHandler } from '../handlers/Status.handler';
 import { PostProcessor } from '../utils/PostProcessor';
 import { GenericMessage, Author } from './ChannelData';
 import { PrivmsgData } from './PrivmsgData';
@@ -9,7 +11,7 @@ import { UserInfoService } from './user-info.service';
 @Injectable({
   providedIn: 'root'
 })
-export class PrivmsgService implements OnMessageReceived {
+export class PrivmsgService implements OnMessageReceived, OnNickChanged {
 
   public readonly messagesReceived: EventEmitter<GenericMessage> = new EventEmitter<GenericMessage>();
   public readonly newPrivOpened: EventEmitter<string> = new EventEmitter<string>();
@@ -20,6 +22,7 @@ export class PrivmsgService implements OnMessageReceived {
 
   constructor(private userSrv: UserInfoService) {
     MessageHandler.setHandler(this);
+    StatusHandler.setHandlerNickChanged(this);
     this.history = JSON.parse(localStorage.getItem('pv_history'));
     if(!this.history) {
       this.history = {};
@@ -77,6 +80,14 @@ export class PrivmsgService implements OnMessageReceived {
   closePrivate(nick: string) {
     delete this.privMsgs[nick];
     this.closedPriv.emit(nick);
+  }
+
+  onNickChanged(nick: NickChange) {
+    if(this.privMsgs[nick.oldNick]) {
+      this.privMsgs[nick.newNick] = this.privMsgs[nick.oldNick];
+      this.closePrivate(nick.oldNick);
+      this.newPrivOpened.emit(nick.newNick);
+    }
   }
 
 }
