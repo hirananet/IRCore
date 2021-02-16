@@ -40,18 +40,20 @@ export class PrivmsgService implements OnMessageReceived, OnNickChanged {
         special: message.meAction,
         target: message.channel
       };
-      if(this.privMsgs[message.author]) {
-        this.privMsgs[message.author].messages.push(msg);
-      } else {
-        this.newPrivOpened.emit(message.author);
-        this.privMsgs[message.author] = new PrivmsgData();
-        this.privMsgs[message.author].user = message.author;
-        this.privMsgs[message.author].messages.push(msg);
+      if(!this.privMsgs[message.author]) {
+        this.openPrivMSG(message.author);
       }
+      this.privMsgs[message.author].messages.push(msg);
       this.messagesReceived.emit(msg);
       this.saveHistory(message.author, msg);
 
     }
+  }
+
+  openPrivMSG(author: string) {
+    this.privMsgs[author] = new PrivmsgData();
+    this.privMsgs[author].user = author;
+    this.newPrivOpened.emit(author);
   }
 
   saveHistory(author: string, msg: GenericMessage) {

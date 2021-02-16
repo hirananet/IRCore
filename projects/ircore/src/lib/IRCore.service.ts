@@ -1,3 +1,4 @@
+import { PrivmsgService } from './services/privmsg.service';
 import { MessageData, WebSocketUtil } from './utils/WebSocket.util';
 import { Injectable } from '@angular/core';
 import { IRCParserV2 } from './IRCParserV2';
@@ -17,7 +18,7 @@ export class IRCoreService {
 
   private webSocket: WebSocketUtil;
 
-  constructor(private userSrv: UserInfoService) {
+  constructor(private userSrv: UserInfoService, private pMsg: PrivmsgService) {
     WebSocketUtil.messageReceived.subscribe((message: MessageData) => {
       if (message.message.indexOf('PING') === 0) {
         const pingResp = message.message.slice(5);
@@ -87,7 +88,7 @@ export class IRCoreService {
       const verb = cmd.split(' ')[0].toLowerCase();
       if (verb === 'query') {
         cmd = cmd.slice(5).trim();
-        // TODO: query a cmd
+        this.pMsg.openPrivMSG(cmd);
       }
       if (verb === 'join') {
         // enviar cmd esto es un join
