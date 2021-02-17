@@ -60,6 +60,9 @@ export class PrivmsgService implements OnMessageReceived, OnNickChanged {
     if (!this.history[author]) {
       this.history[author] = [];
     }
+    if(this.history[author].length > 99) {
+      this.history[author] = this.history[author].slice(0,100);
+    }
     const msC = Object.assign({}, msg);
     msC.fromHistory = true;
     this.history[author].push(msC);
@@ -69,7 +72,6 @@ export class PrivmsgService implements OnMessageReceived, OnNickChanged {
   getHistory(author: string): GenericMessage[] {
     return this.history[author];
   }
-
 
   clearHistory(author: string) {
     this.history[author] = [];

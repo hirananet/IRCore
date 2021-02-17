@@ -119,6 +119,9 @@ export class ChannelsService implements OnJoin, OnPart, OnKick, OnUserList, OnCh
     if (!this.history[channel]) {
       this.history[channel] = [];
     }
+    if(this.history[channel].length > 99) {
+      this.history[channel] = this.history[channel].slice(0,100);
+    }
     const msC = Object.assign({}, msg);
     msC.fromHistory = true;
     this.history[channel].push(msC);
