@@ -21,7 +21,7 @@ export class EmoteList {
       'magico',
       'stamp'
     ],
-    Polsaker: [
+    Alex: [
       'stamp'
     ]
   };
@@ -59,7 +59,6 @@ export class EmoteList {
     'mog',
     'why',
     'WitchHat',
-    'why',
     'yao',
     'true',
     'amazing',
@@ -194,6 +193,7 @@ export class EmoteList {
       }
       if (name === 'kz2') {
         startEventEffectKz2s();
+        return this.specialLocation + 'kiss' + this.facesExtension;
       }
       return undefined;
     } else if (author === 'Alex' || author === 'Tulkalex' || author === 'Tulkalen') {
@@ -201,8 +201,7 @@ export class EmoteList {
         startEventEffectKz2s(); // Probando
       }
       return undefined;
-    } else {
-      return undefined;
     }
+    return undefined;
   }
 }
