@@ -3,7 +3,7 @@ import { ValidRegex } from './validRegex';
 
 export class PostProcessor {
 
-  public static processMessage(message: string, author: string, me: string): MessageWithMetadata {
+  public static processMessage(message: string, author: string, me: string, channel: string): MessageWithMetadata {
     const mwm = new MessageWithMetadata();
 
     const youtubeLink = /((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)?/.exec(message);
@@ -41,7 +41,7 @@ export class PostProcessor {
     if (faces) {
       faces.forEach(face => {
         const realName = face.replace(':', '').replace(':', '');
-        const realLocation = EmoteList.getFace(realName, author);
+        const realLocation = EmoteList.getFace(realName, author, channel);
         if (realLocation) {
           message = message.replace(face, '<img src="' + realLocation + '" class="faceEmote ' + realName + '" data-name="' +
                                           realName + '" title=":' + realName + '" alt=":' + realName + '"/>');

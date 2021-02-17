@@ -34,7 +34,7 @@ export class PrivmsgService implements OnMessageReceived, OnNickChanged {
       const msgAuthor = message.privateAuthor ? message.privateAuthor : message.author;
       const msg: GenericMessage = {
         message: (message.message as string),
-        messageWithMetadata:  PostProcessor.processMessage(message.message as string, msgAuthor, this.userSrv.getNick()),
+        messageWithMetadata:  PostProcessor.processMessage(message.message as string, msgAuthor, this.userSrv.getNick(), undefined),
         author: new Author<string>(msgAuthor),
         date: message.date + ' ' + message.time,
         special: message.meAction,
