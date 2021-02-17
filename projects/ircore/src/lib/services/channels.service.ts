@@ -110,6 +110,11 @@ export class ChannelsService implements OnJoin, OnPart, OnKick, OnUserList, OnCh
     }
   }
 
+  clearHistory(channel: string) {
+    this.history[channel] = [];
+    localStorage.setItem('chan_history', JSON.stringify(this.history));
+  }
+
   saveHistory(channel: string, msg: GenericMessage) {
     if (!this.history[channel]) {
       this.history[channel] = [];

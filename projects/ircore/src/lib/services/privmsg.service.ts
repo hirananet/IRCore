@@ -70,6 +70,12 @@ export class PrivmsgService implements OnMessageReceived, OnNickChanged {
     return this.history[author];
   }
 
+
+  clearHistory(author: string) {
+    this.history[author] = [];
+    localStorage.setItem('pv_history', JSON.stringify(this.history));
+  }
+
   getPrivate(nick: string): PrivmsgData {
     if(!this.privMsgs[nick]) {
       this.privMsgs[nick] = new PrivmsgData();
