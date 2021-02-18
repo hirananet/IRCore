@@ -235,6 +235,14 @@ export class IRCParserV2 {
       return;
     }
 
+    if (parsedMessage.code === '401') { // away message
+      const away = new Away();
+      away.author = parsedMessage.partials[3];
+      away.message = parsedMessage.message;
+      AwayHandler.onNonExistant(away);
+      return;
+    }
+
     if (parsedMessage.code === '716') { // server side ignored
       const ignore = new Away();
       ignore.author = parsedMessage.partials[3];

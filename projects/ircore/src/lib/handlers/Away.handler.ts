@@ -8,8 +8,13 @@ import { EventEmitter } from '@angular/core';
 export class AwayHandler {
 
   public static readonly awayResponse: EventEmitter<Away> = new EventEmitter<Away>();
+  public static readonly nonExistantResponse: EventEmitter<Away> = new EventEmitter<Away>();
 
   public static onAway(away: Away) {
     this.awayResponse.emit(away);
+  }
+
+  public static onNonExistant(away: Away) {
+    this.nonExistantResponse.emit(away);
   }
 }
