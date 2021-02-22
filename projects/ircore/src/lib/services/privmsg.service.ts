@@ -20,6 +20,8 @@ export class PrivmsgService implements OnMessageReceived, OnNickChanged {
 
   public history: { [key: string]: GenericMessage[] };
 
+  public readonly maxPrivMsg = 500;
+
   constructor(private userSrv: UserInfoService) {
     MessageHandler.setHandler(this);
     StatusHandler.setHandlerNickChanged(this);
@@ -60,8 +62,8 @@ export class PrivmsgService implements OnMessageReceived, OnNickChanged {
     if (!this.history[author]) {
       this.history[author] = [];
     }
-    if(this.history[author].length > 199) {
-      this.history[author] = this.history[author].slice(0,100);
+    if(this.history[author].length > this.maxPrivMsg) {
+      this.history[author] = this.history[author].slice(0,this.maxPrivMsg);
     }
     const msC = Object.assign({}, msg);
     msC.fromHistory = true;

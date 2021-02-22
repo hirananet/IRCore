@@ -44,6 +44,8 @@ export class ChannelsService implements OnJoin, OnPart, OnKick, OnUserList, OnCh
 
   public history: { [key: string]: GenericMessage[] };
 
+  public readonly maxChanMsg = 300;
+
   constructor(private userSrv: UserInfoService) {
     // Subscribe to events
     QuitHandler.setHandler(this);
@@ -119,8 +121,8 @@ export class ChannelsService implements OnJoin, OnPart, OnKick, OnUserList, OnCh
     if (!this.history[channel]) {
       this.history[channel] = [];
     }
-    if(this.history[channel].length > 99) {
-      this.history[channel] = this.history[channel].slice(0,100);
+    if(this.history[channel].length > this.maxChanMsg) {
+      this.history[channel] = this.history[channel].slice(0,this.maxChanMsg);
     }
     const msC = Object.assign({}, msg);
     msC.fromHistory = true;
