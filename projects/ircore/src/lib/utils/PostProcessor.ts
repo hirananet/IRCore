@@ -85,6 +85,10 @@ export class PostProcessor {
       }
       mwm = mwm.replace(', ,', ',');
     }
+    const allPing = ValidRegex.pingAllRegex(mwm);
+    if(allPing) {
+      mwm = mwm.replace('@all', '<b class="ping">@all</b>');
+    }
     return mwm;
   }
 

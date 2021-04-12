@@ -25,6 +25,10 @@ export class ValidRegex {
     return '^(.*(\\s|,|:))?('+nick.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')+')((\\s|,|:).*)?$';
   }
 
+  public static pingAllRegex(message) {
+    return /@all/.exec(message);
+  }
+
   public static quoteRegex(message: string) {
     return /^<([^>]+)>\s([^|]+)\|?(.*)$/.exec(message);
   }
