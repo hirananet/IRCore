@@ -25,4 +25,20 @@ export class ValidRegex {
     return '^(.*(\\s|,|:))?('+nick.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')+')((\\s|,|:).*)?$';
   }
 
+  public static quoteRegex(message: string) {
+    return /^<([^>]+)>\s([^|]+)\|?(.*)$/.exec(message);
+  }
+
+  public static youtubeRegex(message: string) {
+    return /((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)?/.exec(message);
+  }
+
+  public static imageRegex(message: string) {
+    return /(http(s?):)([\/|.|\w|\s|-])*\.(?:jpg|gif|png)/.exec(message);
+  }
+
+  public static linkRegex(message: string) {
+    return /(http|https):\/\/([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:\/~+#-]*[\w@?^=%&\/~+#-])?/.exec(message);
+  }
+
 }

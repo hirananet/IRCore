@@ -6,22 +6,22 @@ export class PostProcessor {
   public static processMessage(message: string, author: string, me: string, channel: string): MessageWithMetadata {
     const mwm = new MessageWithMetadata();
 
-    const youtubeLink = /((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)?/.exec(message);
+    const youtubeLink = ValidRegex.youtubeRegex(message);
     if (youtubeLink) {
       message = message.replace(youtubeLink[0], '');
       mwm.youtube = youtubeLink[5];
     }
-    const imageLink = /(http(s?):)([\/|.|\w|\s|-])*\.(?:jpg|gif|png)/.exec(message);
+    const imageLink = ValidRegex.imageRegex(message);
     if (imageLink) {
       message = message.replace(imageLink[0], '');
       mwm.image = imageLink[0];
     }
-    const otherLink = /(http|https):\/\/([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:\/~+#-]*[\w@?^=%&\/~+#-])?/.exec(message);
+    const otherLink = ValidRegex.linkRegex(message);
     if (otherLink) {
       message = message.replace(otherLink[0], '');
       mwm.link = otherLink[0];
     }
-    const quote = /^<([^>]+)>\s([^|]+)\|?(.*)$/.exec(message);
+    const quote = ValidRegex.quoteRegex(message);
     if (quote) {
       mwm.quote = {
         author: quote[1],
