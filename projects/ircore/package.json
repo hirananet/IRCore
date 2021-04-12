@@ -1,6 +1,6 @@
 {
   "name": "ircore",
-  "version": "0.0.10",
+  "version": "0.1.1",
   "peerDependencies": {
     "@angular/common": "^10.2.4",
     "@angular/core": "^10.2.4"
