@@ -143,9 +143,9 @@ export class IRCoreService {
     } else {
       if(target) {
         let privMSG = 'PRIVMSG ' + target + ' :' + command;
-        while(privMSG.length > 510) {
-          this.sendRaw(privMSG.slice(0, 510));
-          privMSG = 'PRIVMSG ' + target + ' :' + privMSG.slice(510);
+        while(privMSG.length > 450) {
+          this.sendRaw(privMSG.slice(0, 450));
+          privMSG = 'PRIVMSG ' + target + ' :' + privMSG.slice(450);
         }
         this.sendRaw(privMSG);
         this._triggerMessage(command, target, false);
