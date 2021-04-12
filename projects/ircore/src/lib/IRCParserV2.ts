@@ -359,6 +359,7 @@ export class IRCParserV2 {
         message.channel = parsedMessage.target;
       }
       message.mention = message.message ? message.message.indexOf(actualNick) >= 0 : false;
+      message.mention = !message.mention ? message.message.indexOf('@all') >= 0 : true;
       MessageHandler.onMessage(message);
       return;
     }
