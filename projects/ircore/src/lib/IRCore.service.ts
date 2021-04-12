@@ -142,7 +142,12 @@ export class IRCoreService {
       return false;
     } else {
       if(target) {
-        this.sendRaw('PRIVMSG ' + target + ' :' + command);
+        let privMSG = 'PRIVMSG ' + target + ' :' + command;
+        while(privMSG.length > 510) {
+          this.sendRaw(privMSG.slice(0, 510));
+          privMSG = 'PRIVMSG ' + target + ' :' + privMSG.slice(510);
+        }
+        this.sendRaw(privMSG);
         this._triggerMessage(command, target, false);
       } else {
         this.sendRaw(command);
