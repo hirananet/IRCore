@@ -42,6 +42,7 @@ export class PrivmsgService implements OnMessageReceived, OnNickChanged {
         special: message.meAction,
         target: message.channel
       };
+      console.log('loading history?', this.privMsgs);
       if(!this.privMsgs[message.author]) {
         this.openPrivMSG(message.author);
       }
@@ -55,6 +56,7 @@ export class PrivmsgService implements OnMessageReceived, OnNickChanged {
   openPrivMSG(author: string) {
     this.privMsgs[author] = new PrivmsgData();
     this.privMsgs[author].user = author;
+    this.privMsgs[author].messages = Object.values(this.getHistory(author));
     this.newPrivOpened.emit(author);
   }
 
@@ -72,7 +74,11 @@ export class PrivmsgService implements OnMessageReceived, OnNickChanged {
   }
 
   getHistory(author: string): GenericMessage[] {
-    return this.history[author];
+    let history = [];
+    if(this.history[author]) {
+      history = Array.isArray(this.history[author]) ? this.history[author] : Object.values(this.history[author]);
+    }
+    return history;
   }
 
   clearHistory(author: string) {
@@ -82,9 +88,7 @@ export class PrivmsgService implements OnMessageReceived, OnNickChanged {
 
   getPrivate(nick: string): PrivmsgData {
     if(!this.privMsgs[nick]) {
-      this.privMsgs[nick] = new PrivmsgData();
-      this.privMsgs[nick].user = nick;
-      this.newPrivOpened.emit(nick);
+      this.openPrivMSG(nick);
     }
     return this.privMsgs[nick];
   }

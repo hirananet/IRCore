@@ -126,12 +126,17 @@ export class ChannelsService implements OnJoin, OnPart, OnKick, OnUserList, OnCh
     }
     const msC = Object.assign({}, msg);
     msC.fromHistory = true;
-    this.history[channel].push(msC);
-    localStorage.setItem('chan_history', JSON.stringify(this.history));
+    const nHistory = Object.assign({}, this.history);
+    nHistory[channel].push(msC);
+    localStorage.setItem('chan_history', JSON.stringify(nHistory));
   }
 
   getHistory(author: string): GenericMessage[] {
-    return this.history[author];
+    let history = [];
+    if(this.history[author]) {
+      history = Array.isArray(this.history[author]) ? this.history[author] : Object.values(this.history[author]);
+    }
+    return history;
   }
 
   onChannelList(user: string, channels: Channel[]) {
@@ -160,7 +165,7 @@ export class ChannelsService implements OnJoin, OnPart, OnKick, OnUserList, OnCh
     const nChannel = new ChannelData();
     nChannel.name = channel;
     nChannel.topic = ChannelStatusHandler.getChannelTopic(nChannel.name);
-    nChannel.messages = []; // Get from log?
+    nChannel.messages = Object.values(this.getHistory(channel));
     this.channels.push(nChannel);
     return nChannel;
   }
