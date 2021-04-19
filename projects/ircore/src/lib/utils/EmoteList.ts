@@ -30,7 +30,7 @@ export class EmoteList {
     }
   }
 
-  public static effectChecker(name: string, author: string, channel: string): string {
+  public static effectChecker(name: string, author: string, channel: string) {
     return undefined;
   }
 
