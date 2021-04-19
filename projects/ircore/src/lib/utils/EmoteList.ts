@@ -21,13 +21,13 @@ export class EmoteList {
   }
 
   public static getFace(name: string, author: string, channel: string): string {
+    this.effectChecker(name, author, channel);
     if (this.faces.findIndex(meme => meme === name) >= 0) {
       return this.facesLocation + name + this.facesExtension;
     } else if (this.specialFaces[author] &&
                this.specialFaces[author].findIndex(meme => meme === name) >= 0) {
       return this.specialLocation + name + this.facesExtension;
     }
-    return this.effectChecker(name, author, channel);
   }
 
   public static effectChecker(name: string, author: string, channel: string): string {
