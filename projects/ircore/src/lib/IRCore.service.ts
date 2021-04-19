@@ -116,7 +116,7 @@ export class IRCoreService {
       }
       if (verb === 'hc') {
         // chanserv?
-        cmd = cmd.replace('hc', 'PRIVMSG HiraClient :');
+        cmd = cmd.replace('hc', 'PRIVMSG HiranaBot :');
       }
       if (verb === 'ns') {
         // nickserv?
