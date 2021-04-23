@@ -12,6 +12,8 @@ export class WhoIsData {
   public idle: number;
   public lastLogin: string;
   public channelList: Channel[];
+  public realn: string; // realname
+  public registered?: string;
 
   public getLastLogin(): string {
     const date = new Date(parseInt(this.lastLogin, 10) * 1000);

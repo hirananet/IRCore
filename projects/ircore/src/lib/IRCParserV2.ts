@@ -97,6 +97,17 @@ export class IRCParserV2 {
       WhoIsHandler.addWhoisPartial(parsedMessage.partials[3], 'connectedFrom', parsedMessage.body.replace('is connecting from ', ''));
       return;
     }
+    if (parsedMessage.code === '307') {
+      // nick registered
+      WhoIsHandler.addWhoisPartial(parsedMessage.partials[3], 'registered', parsedMessage.body);
+      return;
+    }
+    if (parsedMessage.code === '311') {
+      // real name
+      // :hiperion.hirana.net 311 Zerpiente Zerpiente Zerpiente Hirana-8kh.svf.168.181.IP * :IRCoreV2
+      WhoIsHandler.addWhoisPartial(parsedMessage.partials[3], 'realn', parsedMessage.body);
+      return;
+    }
     if (parsedMessage.code === '312') {
       // server desde donde está conectado
       // :avalon.hira.io 312 Tulkalex Tulkalex avalon.hira.io :Avalon - Frankfurt, Germany
@@ -299,7 +310,17 @@ export class IRCParserV2 {
     }
 
     if (parsedMessage.code === '315') {
-      // TODO: check this... End of who
+      // End of who
+      return;
+    }
+
+    if (parsedMessage.code === '366') {
+      // end names list
+      return;
+    }
+
+    if (parsedMessage.code === '322') {
+      // end channel list
       return;
     }
 
