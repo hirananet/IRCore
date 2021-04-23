@@ -259,6 +259,7 @@ export class IRCParserV2 {
       ignore.author = parsedMessage.partials[3];
       ignore.message = parsedMessage.message;
       IgnoreHandler.onIgnore(ignore);
+      return;
     }
 
     if (parsedMessage.code === '464') {
@@ -332,6 +333,7 @@ export class IRCParserV2 {
       kickInfo.operator = parsedMessage.message;
       kickInfo.userTarget = new User(kickData[2]);
       KickHandler.onKick(kickInfo);
+      return;
     }
 
     if (parsedMessage.code === 'PART') {
@@ -345,10 +347,12 @@ export class IRCParserV2 {
       part.message = parsedMessage.message;
       part.user = new User(parsedMessage.simplyOrigin);
       PartHandler.onPart(part);
+      return;
     }
 
     if (parsedMessage.code === 'QUIT') {
       QuitHandler.onQuit(new Quit(parsedMessage.simplyOrigin));
+      return;
     }
 
     if (parsedMessage.code === 'JOIN') {
@@ -358,6 +362,7 @@ export class IRCParserV2 {
       join.user = new User(parsedMessage.simplyOrigin);
       join.origin = parsedMessage.origin;
       JoinHandler.onJoin(join);
+      return;
     }
 
     if (parsedMessage.code === 'PRIVMSG') {
