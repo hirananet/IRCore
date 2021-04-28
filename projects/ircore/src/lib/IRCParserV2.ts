@@ -320,7 +320,7 @@ export class IRCParserV2 {
       return;
     }
 
-    if (parsedMessage.code === '322') {
+    if (parsedMessage.code === '323') {
       // end channel list
       return;
     }
