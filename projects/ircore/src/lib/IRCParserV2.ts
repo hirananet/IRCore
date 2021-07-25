@@ -36,6 +36,8 @@ import { ModeratedHandler } from './handlers/Moderated.handler';
 
 export class IRCParserV2 {
 
+  private static readonly usersInChannel: {[key:string]: UserInChannel[]} = {};
+
   public static parseMessage(message: string): IRCMessage[] {
       const out = [];
       message.split('\r\n').forEach(msgLine => {
@@ -177,13 +179,13 @@ export class IRCParserV2 {
 
     if (parsedMessage.code === '353') { // names
       const channel = UsersHandler.getChannelOfMessage(rawMessage);
+      if(!IRCParserV2.usersInChannel[channel]) {
+        IRCParserV2.usersInChannel[channel] = [];
+      }
       const users = parsedMessage.message.trim().split(' ');
-      const usersInChannel: UserInChannel[] = [];
       users.forEach(user => {
-        usersInChannel.push(new UserInChannel(user, channel));
+        IRCParserV2.usersInChannel[channel].push(new UserInChannel(user, channel));
       });
-      const chnlObj = new Channel(channel);
-      UsersHandler.addUsersToChannel(chnlObj.name, usersInChannel);
       return;
     }
 
@@ -316,7 +318,10 @@ export class IRCParserV2 {
     }
 
     if (parsedMessage.code === '366') {
-      // end names list
+      const channel = parsedMessage.partials[3];
+      const chnlObj = new Channel(channel);
+      UsersHandler.addUsersToChannel(chnlObj.name, IRCParserV2.usersInChannel[channel]);
+      IRCParserV2.usersInChannel[channel] = [];
       return;
     }
 
