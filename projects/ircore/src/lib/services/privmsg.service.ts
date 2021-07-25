@@ -40,7 +40,8 @@ export class PrivmsgService implements OnMessageReceived, OnNickChanged {
         author: new Author<string>(msgAuthor),
         date: message.date + ' ' + message.time,
         special: message.meAction,
-        target: message.channel
+        target: message.channel,
+        externalNotice: message.externalNotice,
       };
       console.log('loading history?', this.privMsgs);
       if(!this.privMsgs[message.author]) {

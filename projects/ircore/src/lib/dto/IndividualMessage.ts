@@ -14,6 +14,7 @@ export class IndividualMessage {
   mention?: boolean;
   fromLog?: boolean;
   privateAuthor?: string; // when i send private message my nick is here.
+  externalNotice: boolean = false;
 }
 
 export enum IndividualMessageTypes {

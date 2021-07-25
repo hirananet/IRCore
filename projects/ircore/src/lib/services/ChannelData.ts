@@ -21,6 +21,7 @@ export class GenericMessage {
   messageWithMetadata?: MessageWithMetadata;
   target?: string; // nombre del chat o conversación
   fromHistory?: boolean;
+  externalNotice: boolean = false;
 }
 
 export class Quote {

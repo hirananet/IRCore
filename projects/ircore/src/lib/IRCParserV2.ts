@@ -284,8 +284,21 @@ export class IRCParserV2 {
     }
 
     if (parsedMessage.code === 'NOTICE') {
-      console.log('NOTICE', parsedMessage.target, parsedMessage.partials);
-      if (parsedMessage.simplyOrigin && parsedMessage.simplyOrigin !== '*status' && parsedMessage.target[0] === '#') {
+      if(parsedMessage.target[0] === '#') {
+        // notice a un canal
+        const message = new IndividualMessage();
+        message.author = parsedMessage.simplyOrigin;
+        message.message = parsedMessage.message;
+        message.meAction = false;
+        message.externalNotice = true;
+        message.time = Time.getTime();
+        message.date = Time.getDateStr();
+        message.messageType = IndividualMessageTypes.CHANMSG;
+        message.channel = parsedMessage.target;
+        MessageHandler.onMessage(message);
+        return;
+      } else if (parsedMessage.simplyOrigin && parsedMessage.simplyOrigin !== '*status' && parsedMessage.target[0] === '#') {
+        // notices generales
         const message = new IndividualMessage();
         message.messageType = IndividualMessageTypes.NOTIFY;
         message.author = parsedMessage.simplyOrigin;
@@ -297,6 +310,7 @@ export class IRCParserV2 {
         MessageHandler.onMessage(message);
         return;
       } else {
+        // notice
         ServerHandler.onServerNoticeResponse(parsedMessage);
         return;
       }

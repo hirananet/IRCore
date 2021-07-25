@@ -203,7 +203,8 @@ export class ChannelsService implements OnJoin, OnPart, OnKick, OnUserList, OnCh
       date: Time.getTime() + ' ' + Time.getDateStr(),
       special: false,
       target: channel.name,
-      notify: true
+      notify: true,
+      externalNotice: false
     };
     channel.messages.push(msg);
     this.messagesReceived.emit(msg);
@@ -322,7 +323,8 @@ export class ChannelsService implements OnJoin, OnPart, OnKick, OnUserList, OnCh
         author: new Author<string>(message.author),
         date: message.date + ' ' + message.time,
         special: message.meAction,
-        target: tgtChan
+        target: tgtChan,
+        externalNotice: message.externalNotice,
       };
       chanObj.messages.push(msg);
       this.messagesReceived.emit(msg);
