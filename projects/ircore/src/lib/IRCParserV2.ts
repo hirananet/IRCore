@@ -284,6 +284,7 @@ export class IRCParserV2 {
     }
 
     if (parsedMessage.code === 'NOTICE') {
+      console.log('NOTICE', parsedMessage.target, parsedMessage.partials);
       if (parsedMessage.simplyOrigin && parsedMessage.simplyOrigin !== '*status' && parsedMessage.target[0] === '#') {
         const message = new IndividualMessage();
         message.messageType = IndividualMessageTypes.NOTIFY;
