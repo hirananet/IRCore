@@ -104,7 +104,8 @@ export class IRCParserV3 {
       this.privSrv.onNewMessage(raw.serverID, origin, origin, message);
       this.privSrv.notifications.emit({
         raw,
-        message
+        message,
+        type: 'message'
       });
     } else {
       const channel = new Channel(raw.partials[2]);
@@ -222,7 +223,7 @@ export class IRCParserV3 {
   private static onServerSideIgnore(raw: RawMessage) {
     const author = raw.partials[3];
     const message = raw.content;
-    this.noticeSrv.notifications.emit({
+    this.privSrv.notifications.emit({
       raw,
       type: 'sside-ignored',
       parsedObject: {
@@ -235,7 +236,7 @@ export class IRCParserV3 {
   private static onNonExistantNick(raw: RawMessage) {
     const author = raw.partials[3];
     const message = raw.content;
-    this.noticeSrv.notifications.emit({
+    this.privSrv.notifications.emit({
       raw,
       type: 'non-existant',
       parsedObject: {
@@ -248,7 +249,7 @@ export class IRCParserV3 {
   private static onAwayMessage(raw: RawMessage) {
     const author = raw.partials[3];
     const message = raw.content;
-    this.noticeSrv.notifications.emit({
+    this.privSrv.notifications.emit({
       raw,
       type: 'away',
       parsedObject: {
@@ -312,8 +313,13 @@ export class IRCParserV3 {
   private static onRequestPMGmode(raw: RawMessage) {  // requiere privado cuando tenes +g
     // :avalon.hira.io 718 Tulkalex Tulkaz ~Harkito@net-j7j.cur.32.45.IP :is messaging you, and you have user mode +g set.
     // Use /ACCEPT +Tulkaz to allow.
-    const author = raw.partials[3];
-    // TODO:send invite request
+    this.privSrv.notifications.emit({
+      raw,
+      type: 'gmode',
+      parsedObject: {
+        author: raw.partials[3]
+      }
+    });
   }
 
   private static onFinishWhois(raw: RawMessage) {

@@ -11,13 +11,6 @@ This library works fine with Inspircd and Anope (not tested this version in athe
 
 # Event Handling
 
-### this.privates.notifications
-
-types:
-* non-existant: message to non existant nick or channel
-* sside-ignored: server side ignore.
-* away: away message
-
 ### this.notices.notifications
 
 types:
@@ -46,6 +39,15 @@ types:
 * banned: from channel
 * channel-moderated: channel is in moderated mode.
 * notice: external notice in channel.
+
+### this.privs.notifications
+
+types:
+* message: private message
+* non-existant: message to non existant nick or channel
+* sside-ignored: server side ignore.
+* away: away message
+* gmode: is messaging you, and you have user mode +g set.
 
 # IRCParser V3
 
