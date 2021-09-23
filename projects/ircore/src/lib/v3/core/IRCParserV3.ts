@@ -27,7 +27,7 @@ export class IRCParserV3 {
     this.listeners[code] = []
   }
 
-  public static addStandardListeners() {
+  public static addDefaultListeners() {
     this.addListener('PRIVMSG', this.onPrivMSG);
     this.addListener('NOTICE', this.onNotice);
     this.addListener('JOIN', this.onJoin);

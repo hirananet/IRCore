@@ -15,7 +15,7 @@ export class ServerService {
   constructor(chanSrv: ChannelsService, noticeSrv: NoticesService) {
     IRCParserV3.setChanSrv(chanSrv);
     IRCParserV3.setNoticeSrv(noticeSrv)
-    IRCParserV3.addStandardListeners();
+    IRCParserV3.addDefaultListeners();
   }
 
   public connect(server: ServerData) {
