@@ -15,6 +15,10 @@ export class CustomWebSocket {
     return this.statusChanged;
   }
 
+  onMessageReceived(): EventEmitter<MessageData> {
+    return this.messageReceived;
+  }
+
   connect(url: string, uuid: string): Observable<string> {
       this.wss = webSocket<string>({
         url,

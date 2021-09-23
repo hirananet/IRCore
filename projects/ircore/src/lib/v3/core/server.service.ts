@@ -1,7 +1,9 @@
+import { IRCParserV3 } from './utils/IRCParseV3';
 import { ConnectionStatus, ConnectionStatusData } from './../../utils/WebSocket.util';
-import { CustomWebSocket } from './custom.websocket';
-import { ServerData } from './server.data';
+import { CustomWebSocket } from './utils/custom.websocket';
+import { ServerData } from './utils/server.data';
 import { Injectable } from '@angular/core';
+import { MessageData } from 'ircore';
 
 @Injectable({
   providedIn: 'root'
@@ -10,9 +12,7 @@ export class ServerService {
 
   private servers: {[key: string]: ServerData} = {};
 
-  constructor() {
-
-  }
+  constructor() { }
 
   connect(server: ServerData) {
     this.servers[server.serverID] = server;
@@ -33,6 +33,10 @@ export class ServerService {
     } else {
       server.websocket.connect(`${proto}://${server.gatewayServer}:${server.gatewayPort}`, server.serverID);
     }
+    server.websocket.onMessageReceived().subscribe((message: MessageData) => {
+      console.log('RAW: ' + message);
+      IRCParserV3.process(message);
+    });
   }
 
   public getServerById(id: string) {
@@ -41,5 +45,9 @@ export class ServerService {
 
   public getServerByIrcServer(ircServer: string) {
     return this.servers[Object.keys(this.servers).find(key => this.servers[key].ircServer === ircServer)];
+  }
+
+  public sendToServer(id: string, raw: string) {
+    this.servers[id].websocket.send(raw);
   }
 }
