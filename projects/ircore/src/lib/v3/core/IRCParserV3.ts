@@ -181,7 +181,7 @@ export class IRCParserV3 {
 
   private static onChannelModerated(raw: RawMessage) {
     console.log('Channel moderated', raw);
-    this.noticeSrv.notifications.emit({
+    this.chanSrv.notifications.emit({
       raw,
       type: 'channel-moderated',
       parsedObject: {
@@ -260,7 +260,7 @@ export class IRCParserV3 {
 
   private static onBanned(raw: RawMessage) {
     console.log('Banned messagE: ', raw);
-    this.noticeSrv.notifications.emit({
+    this.chanSrv.notifications.emit({
       raw,
       type: 'banned',
       parsedObject: {

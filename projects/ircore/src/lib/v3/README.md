@@ -11,16 +11,18 @@ This library works fine with Inspircd and Anope (not tested this version in athe
 
 # Event Handling
 
+### this.privates.notifications
+
+types:
+* non-existant: message to non existant nick or channel
+* sside-ignored: server side ignore.
+* away: away message
+
 ### this.notices.notifications
 
 types:
 * motd: message of te day received.
 * require-pass: 464 (usually for znc logins).
-* channel-moderated: channel is in moderated mode.
-* sside-ignored: server side ignore.
-* non-existant: message to non existant nick or channel
-* away: away message
-* banned: from channel
 * notice: global notice message recived.
 * uknown: no listener for this message code.
 * pong: pong command received.
@@ -41,6 +43,8 @@ types:
 * join: user joined to channel
 * close-channel: me parted from channel
 * leave: user leaved channel
+* banned: from channel
+* channel-moderated: channel is in moderated mode.
 * notice: external notice in channel.
 
 # IRCParser V3
