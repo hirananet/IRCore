@@ -4,5 +4,5 @@ import { UserData } from './userData';
 export class PrivChat {
   public name: string;
   public target: UserData;
-  public messages: Message[];
+  public messages: Message[] = [];
 }

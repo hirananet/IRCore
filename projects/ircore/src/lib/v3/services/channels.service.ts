@@ -8,7 +8,7 @@ import { Injectable } from '@angular/core';
 })
 export class ChannelsService {
 
-  private channelsOpened: {[key: string]: Channel[]} = {};
+  private channelsOpened: {[serverID: string]: Channel[]} = {};
 
   constructor() { }
 

@@ -1,3 +1,4 @@
+import { PrivsService } from './../services/privs.service';
 import { ModeParser } from './ModeParser';
 import { MessageData } from './custom.websocket';
 import { Message } from '../domain/message';
@@ -12,6 +13,7 @@ export class IRCParserV3 {
 
   private static chanSrv: ChannelsService;
   private static noticeSrv: NoticesService;
+  private static privSrv: PrivsService;
   private static currentNick: {[key: string]: string} = {};
 
   private static listeners: {[code: string]: ((raw: RawMessage) => void)[]} = {}
@@ -76,6 +78,9 @@ export class IRCParserV3 {
     this.noticeSrv = noticeSrv;
   }
 
+  public static setPrivSrv(privSrv: PrivsService) {
+    this.privSrv = privSrv;
+  }
 
   public static setNick(newNick: string, serverId: string) {
     this.currentNick[serverId] = newNick;
@@ -95,7 +100,8 @@ export class IRCParserV3 {
   private static onPrivMSG(raw: RawMessage) {
     const message = Message.parseMessage(raw, this.currentNick[raw.serverID].toLowerCase());
     if(raw.partials[2].toLowerCase() == this.currentNick[raw.serverID].toLowerCase()) {
-      // TODO: priv message:
+      const origin = raw.getOrigin().simplyOrigin;
+      this.privSrv.onNewMessage(raw.serverID, origin, origin, message);
     } else {
       const channel = new Channel(raw.partials[2]);
       this.chanSrv.addMessageToChannel(raw.serverID, channel, message);

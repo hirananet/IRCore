@@ -1,3 +1,4 @@
+import { PrivsService } from './privs.service';
 import { NoticesService } from './notices.service';
 import { ChannelsService } from './channels.service';
 import { IRCParserV3 } from '../core/IRCParserV3';
@@ -12,9 +13,10 @@ export class ServerService {
 
   private static servers: {[key: string]: ServerData} = {};
 
-  constructor(chanSrv: ChannelsService, noticeSrv: NoticesService) {
+  constructor(chanSrv: ChannelsService, noticeSrv: NoticesService, privSrv: PrivsService) {
     IRCParserV3.setChanSrv(chanSrv);
     IRCParserV3.setNoticeSrv(noticeSrv)
+    IRCParserV3.setPrivSrv(privSrv);
     IRCParserV3.addDefaultListeners();
   }
 
