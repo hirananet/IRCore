@@ -9,8 +9,8 @@ This library works fine with Inspircd and Anope (not tested this version in athe
 
 # Services
 
-# Notifications Handlers
+# Event Handling
 
 # IRCParser V3
 
-## Extensible
+## Extensions
