@@ -1,3 +1,4 @@
+import { NoticesService } from './notices.service';
 import { ChannelsService } from './channels.service';
 import { IRCParserV3 } from '../core/IRCParserV3';
 import { CustomWebSocket, ConnectionStatus, ConnectionStatusData, MessageData } from '../core/custom.websocket';
@@ -11,9 +12,9 @@ export class ServerService {
 
   private static servers: {[key: string]: ServerData} = {};
 
-  constructor(private readonly chanSrv: ChannelsService) {
+  constructor(chanSrv: ChannelsService, noticeSrv: NoticesService) {
     IRCParserV3.setChanSrv(chanSrv);
-
+    IRCParserV3.setNoticeSrv(noticeSrv)
     IRCParserV3.addStandardListeners();
   }
 

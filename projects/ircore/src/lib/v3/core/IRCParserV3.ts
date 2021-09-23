@@ -72,6 +72,11 @@ export class IRCParserV3 {
     this.chanSrv = chanSrv;
   }
 
+  public static setNoticeSrv(noticeSrv: NoticesService) {
+    this.noticeSrv = noticeSrv;
+  }
+
+
   public static setNick(newNick: string, serverId: string) {
     this.currentNick[serverId] = newNick;
   }
