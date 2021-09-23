@@ -74,13 +74,13 @@ export class IRCParserV3 {
       return this.onChannelList(raw);
     }
     if (raw.code === '321') {
-      return this.onStartChannelList(raw);
+      return this.onStartCommandList(raw);
     }
     if (raw.code === '322') {
-      return this.onChannelListNewChannel(raw);
+      return this.onCommandListNewChannel(raw);
     }
     if (raw.code === '323') {
-      return this.onFinishChannelList(raw);
+      return this.onFinishCommandlList(raw);
     }
     if (raw.code === '330') {
       return this.onPartialUserData(raw, 'user-account');
@@ -140,12 +140,12 @@ export class IRCParserV3 {
   }
 
   private static onPrivMSG(raw: RawMessage) {
-    const message = Message.parseMessage(raw, this.currentNick[raw.serverID]);
-    if(raw.partials[2] == this.currentNick[raw.serverID]) {
+    const message = Message.parseMessage(raw, this.currentNick[raw.serverID].toLowerCase());
+    if(raw.partials[2].toLowerCase() == this.currentNick[raw.serverID].toLowerCase()) {
       // TODO: priv message:
     } else {
-      // TODO: channel message:
       const channel = new Channel(raw.partials[2]);
+      this.chanSrv.addMessageToChannel(raw.serverID, channel, message);
     }
   }
 
@@ -177,12 +177,12 @@ export class IRCParserV3 {
   private static onNickChanged(raw: RawMessage) {
     const newNick = raw.partials[2] ? raw.partials[2] : raw.content;
     const originalNick = UserData.parseUser(raw.getOrigin().simplyOrigin);
-    if(originalNick.nick == this.currentNick[raw.serverID]) {
+    if(originalNick.nick.toLowerCase() == this.currentNick[raw.serverID].toLowerCase()) {
       this.setNick(newNick, raw.serverID);
       // TODO: me nick changed
-    } else {
-      // TODO: other nick changed
     }
+    this.chanSrv.nickChangeInAllChannels(raw.serverID, originalNick, UserData.parseUser(newNick));
+    // FIXME: notification
   }
 
   private static onMotd(raw: RawMessage) {
@@ -208,7 +208,8 @@ export class IRCParserV3 {
       channel = new Channel(channels.slice(1)[0]);
       topic = raw.content;
     }
-    // TODO: set topic to channel
+    this.chanSrv.setTopic(raw.serverID, channel, topic);
+    // FIXME: notification
   }
 
   private static onServerSideIgnore(raw: RawMessage) {
@@ -240,11 +241,11 @@ export class IRCParserV3 {
     // TODO: obtener nick anterior.
     console.log(raw);
     const serverData = ServerService.getServerData(raw.serverID);
-    if(this.currentNick[raw.serverID] == serverData.user.nick) {
+    if(this.currentNick[raw.serverID].toLowerCase() == serverData.user.nick.toLowerCase()) {
       // change nick to alt nick
       serverData.websocket.send(`NICK ${serverData.user.altNick}`)
       this.setNick(serverData.user.altNick, raw.serverID);
-    } else if(this.currentNick[raw.serverID] == serverData.user.altNick) {
+    } else if(this.currentNick[raw.serverID].toLowerCase() == serverData.user.altNick.toLowerCase()) {
       // TODO: change to random
     } else {
       // TODO: nick already in use, user changed.
@@ -257,11 +258,10 @@ export class IRCParserV3 {
       chnlList.push(new Channel(pmChnl));
     });
     const nick = UserData.parseUser(raw.partials[3]);
-    // mi nick
     if(this.currentNick[raw.serverID].toLowerCase() == nick.nick.toLowerCase()) {
-      // TODO: lista de mis canales
+      this.chanSrv.newChannelList(raw.serverID, chnlList);
     } else {
-      // TODO: lista de canales del whois
+      // TODO: lista de canales del whois a un usuario
     }
   }
 
@@ -276,28 +276,31 @@ export class IRCParserV3 {
     // WhoIsHandler.finalWhoisMessage(raw.partials[3]);
   }
 
-  private static onStartChannelList(raw: RawMessage) {
-    // ListHandler.newChannelList();
+  private static onStartCommandList(raw: RawMessage) {
+    // Start command /LIST
   }
 
-  private static onChannelListNewChannel(raw: RawMessage) {
+  private static onCommandListNewChannel(raw: RawMessage) {
     // const body = raw.body.split(']');
+    // channel of /LIST
     // ListHandler.addChannels(new ChannelInfo(raw.partials[3].slice(1), body[1], body[0].replace('[' , ''), parseInt(raw.partials[4])));
   }
 
-  private static onFinishChannelList(raw: RawMessage) {
-    // end channel list
+  private static onFinishCommandlList(raw: RawMessage) {
+    // end command /LIST
   }
 
   private static onCommandNamesResponse(raw: RawMessage) {
-    // const channel = UsersHandler.getChannelOfMessage(rawMessage);
-    // if(!IRCParserV2.usersInChannel[channel]) {
-    //   IRCParserV2.usersInChannel[channel] = [];
-    // }
-    // const users = raw.content.trim().split(' ');
-    // users.forEach(user => {
-    //   IRCParserV2.usersInChannel[channel].push(new UserInChannel(user, channel));
-    // });
+    const messages = /(=|@|\*)([^:]+):/.exec(raw.raw);
+    if(!messages || messages.length < 2) {
+      console.error('Bad parsing Names channel ', raw.raw);
+      return;
+    }
+    const channel = new Channel(messages[2].trim());
+    raw.content.trim().split(' ').forEach(usrStr => {
+      const user = UserData.parseUser(usrStr);
+      this.chanSrv.addUserToChannel(raw.serverID, channel, user);
+    });
   }
 
   private static onWhoResponse(raw: RawMessage) {
@@ -332,19 +335,19 @@ export class IRCParserV3 {
   }
 
   private static onKick(data: RawMessage) {
-    // let channel = raw.target;
-    // const kickData = KickHandler.kickParse(rawMessage);
-    // const kickInfo = new KickInfo();
-    // kickInfo.channel = new Channel(channel);
-    // kickInfo.operator = raw.content;
-    // kickInfo.userTarget = new User(kickData[2]);
-    // KickHandler.onKick(kickInfo);
+    const channel = new Channel(data.partials[2]);
+    const operator = data.content;
+    const kickData = /#([^\s]+)\s([^:]+)\s/.exec(data.raw);
+    const user = UserData.parseUser(kickData[2])
+    this.chanSrv.removeUser(data.serverID, channel, user);
+    // FIXME: notification
   }
 
   private static onQuit(data: RawMessage) {
     const userQuitted = UserData.parseUser(data.getOrigin().simplyOrigin);
     const quitMessage = data.content;
-    // TODO: quit.
+    this.chanSrv.removeUserInAllChannels(data.serverID, userQuitted);
+    // FIXME: notification
   }
 
   private static onJoin(data: RawMessage) {
@@ -352,9 +355,10 @@ export class IRCParserV3 {
     const channel = new Channel(data.content ? data.content : data.partials[2]);
     const user = UserData.parseUser(data.getOrigin().simplyOrigin)
     if(user.nick == this.currentNick[data.serverID]) {
-      // TODO: me join
+      this.chanSrv.addChannel(data.serverID, channel);
     } else {
-      // TODO: another join
+      this.chanSrv.addUserToChannel(data.serverID, channel, user);
+      // FIXME: notification
     }
   }
 
@@ -363,9 +367,10 @@ export class IRCParserV3 {
     const partMessage = data.content;
     const userParted = UserData.parseUser(data.getOrigin().simplyOrigin);
     if(userParted.nick == this.currentNick[data.serverID]) {
-      // TODO: me parting
+      this.chanSrv.removeChannel(data.serverID, channel);
     } else {
-      // TODO: another parting
+      this.chanSrv.removeUser(data.serverID, channel, userParted);
+      // FIXME: notification
     }
   }
 

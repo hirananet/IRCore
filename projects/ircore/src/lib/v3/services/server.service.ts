@@ -1,4 +1,4 @@
-import { ChannelsService } from '../../services/channels.service';
+import { ChannelsService } from './channels.service';
 import { IRCParserV3 } from '../core/IRCParseV3';
 import { CustomWebSocket, ConnectionStatus, ConnectionStatusData, MessageData } from '../core/custom.websocket';
 import { ServerData } from '../core/server.data';

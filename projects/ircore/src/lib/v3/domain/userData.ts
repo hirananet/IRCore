@@ -27,10 +27,7 @@ export class UserData {
       mode = UModes.VOICE;
       nick = nick.substr(1);
     }
-    return {
-      nick,
-      mode
-    }
+    return new SimplyUser(nick, mode);
   }
 }
 
@@ -40,16 +37,28 @@ export class FullNick {
 }
 
 export enum UModes {
-  FOUNDER,
-  ADMIN,
-  OPER,
-  HALFOPER,
-  VOICE,
-  BANNED,
-  UNDEFINED
+  FOUNDER = 'Founder',
+  ADMIN = 'Admin',
+  OPER = 'Operator',
+  HALFOPER = 'Half-Operator',
+  VOICE = 'Voice',
+  BANNED = 'Banned',
+  UNDEFINED = 'Undefined'
 }
 
 export class SimplyUser {
   public nick: string;
   public mode: UModes;
+
+  constructor(nick: string, mode: UModes) {
+    this.nick = nick;
+    this.mode = mode;
+  }
+
+  toUser(): UserData {
+    const ud = new UserData();
+    ud.fullNick = new FullNick();
+    ud.fullNick.nick = this.nick;
+    return ud;
+  }
 }

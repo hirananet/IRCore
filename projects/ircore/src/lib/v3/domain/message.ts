@@ -35,7 +35,7 @@ export class Message {
       message.isMeCommand = false;
       message.content = raw.content;
     }
-    message.haveMention = message.content.indexOf(currentNick) >= 0 || message.content.indexOf('@all') >= 0;
+    message.haveMention = message.content.toLowerCase().indexOf(currentNick) >= 0 || message.content.indexOf('@all') >= 0;
     return message;
   }
 }
