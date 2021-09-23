@@ -21,6 +21,9 @@ types:
 * non-existant: message to non existant nick or channel
 * away: away message
 * banned: from channel
+* notice: global notice message recived.
+* uknown: no listener for this message code.
+* pong: pong command received.
 * nick-in-use: this nick is in use
 
 ### this.channels.notifications

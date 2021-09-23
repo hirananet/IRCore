@@ -273,13 +273,6 @@ export class IRCParserV3 {
     // TODO: obtener nick anterior.
     console.log('Nick in use', raw);
     const serverData = ServerService.getServerData(raw.serverID);
-    this.noticeSrv.notifications.emit({
-      raw,
-      type: 'nick-in-use',
-      parsedObject: {
-
-      }
-    });
     if(this.currentNick[raw.serverID].toLowerCase() == serverData.user.nick.toLowerCase()) {
       // change nick to alt nick
       serverData.websocket.send(`NICK ${serverData.user.altNick}`)
@@ -289,6 +282,13 @@ export class IRCParserV3 {
     } else {
       // TODO: nick already in use, user changed.
     }
+    this.noticeSrv.notifications.emit({
+      raw,
+      type: 'nick-in-use',
+      parsedObject: {
+
+      }
+    });
   }
 
   private static onChannelList(raw: RawMessage) {
@@ -487,7 +487,10 @@ export class IRCParserV3 {
     } else {
       // raw notice
       this.noticeSrv.addNoticeToServer(data.serverID, data.raw, true);
-      // FIXME: global notice
+      this.noticeSrv.notifications.emit({
+        raw: data,
+        type: 'notice'
+      });
     }
   }
 
@@ -535,10 +538,18 @@ export class IRCParserV3 {
 
   private static onUknownMessage(raw: RawMessage) {
     this.noticeSrv.addNoticeToServer(raw.serverID, raw.raw, false);
-    // FIXME: notification?
+    this.noticeSrv.notifications.emit({
+      raw,
+      type: 'uknown'
+    });
   }
 
-  private static onPongReceived(raw: RawMessage) { }
+  private static onPongReceived(raw: RawMessage) {
+    this.noticeSrv.notifications.emit({
+      raw,
+      type: 'pong'
+    });
+  }
 
   private static onCommandNamesFinish(raw: RawMessage) {
     // const channel = raw.partials[3];
