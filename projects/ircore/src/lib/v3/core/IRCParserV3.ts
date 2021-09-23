@@ -14,6 +14,60 @@ export class IRCParserV3 {
   private static noticeSrv: NoticesService;
   private static currentNick: {[key: string]: string} = {};
 
+  private static listeners: {[code: string]: ((raw: RawMessage) => void)[]} = {}
+
+  public static addListener(code: string, fn: (raw: RawMessage) => void) {
+    if(!this.listeners[code]) {
+      this.listeners[code] = [];
+    }
+    this.listeners[code].push(fn);
+  }
+
+  public static clearListeners(code: string) {
+    this.listeners[code] = []
+  }
+
+  public static addStandardListeners() {
+    this.addListener('PRIVMSG', this.onPrivMSG);
+    this.addListener('NOTICE', this.onNotice);
+    this.addListener('JOIN', this.onJoin);
+    this.addListener('PART', this.onPart);
+    this.addListener('MODE', this.onModeCommand);
+    this.addListener('NICK', this.onNickChanged);
+    this.addListener('TOPIC', this.onChannelTopic);
+    this.addListener('KICK', this.onKick);
+    this.addListener('PONG', this.onPongReceived);
+    this.addListener('QUIT', this.onQuit);
+    this.addListener('301', this.onAwayMessage);
+    this.addListener('307', this.onPartialUserData);
+    this.addListener('311', this.onPartialUserData);
+    this.addListener('312', this.onPartialUserData);
+    this.addListener('313', this.onPartialUserData);
+    this.addListener('315', this.onFinishWho);
+    this.addListener('317', this.onPartialUserData);
+    this.addListener('318', this.onFinishWhois);
+    this.addListener('319', this.onChannelList);
+    this.addListener('321', this.onStartCommandList);
+    this.addListener('322', this.onCommandListNewChannel);
+    this.addListener('323', this.onFinishCommandlList);
+    this.addListener('330', this.onPartialUserData);
+    this.addListener('332', this.onChannelTopicChanged);
+    this.addListener('352', this.onWhoResponse);
+    this.addListener('353', this.onCommandNamesResponse);
+    this.addListener('366', this.onCommandNamesFinish);
+    this.addListener('375', this.onMotd);
+    this.addListener('378', this.onPartialUserData);
+    this.addListener('379', this.onPartialUserData);
+    this.addListener('401', this.onNonExistantNick);
+    this.addListener('404', this.onChannelModerated);
+    this.addListener('433', this.onNickAlreadyInUse);
+    this.addListener('464', this.onNickRequirePassword);
+    this.addListener('474', this.onBanned);
+    this.addListener('671', this.onPartialUserData);
+    this.addListener('716', this.onServerSideIgnore);
+    this.addListener('718', this.onRequestPMGmode);
+  }
+
   public static setChanSrv(chanSrv: ChannelsService) {
     this.chanSrv = chanSrv;
   }
@@ -24,119 +78,11 @@ export class IRCParserV3 {
 
   public static process(socketMessage: MessageData) {
     const raw = new RawMessage(socketMessage.message, socketMessage.uuid);
-    if (raw.code === 'PRIVMSG') {
-      return this.onPrivMSG(raw);
-    }
-    if (raw.code === 'NOTICE') {
-      return this.onNotice(raw);
-    }
-    if (raw.code === 'JOIN') {
-      return this.onJoin(raw);
-    }
-    if (raw.code === 'PART') {
-      return this.onPart(raw);
-    }
-    if (raw.code === 'MODE') {
-      return this.onModeCommand(raw);
-    }
-    if (raw.code === 'NICK') {
-      return this.onNickChanged(raw);
-    }
-    if (raw.code === 'TOPIC') {
-      return this.onChannelTopicChanged(raw, true);
-    }
-    if (raw.code === 'KICK') {
-      return this.onKick(raw);
-    }
-    if (raw.code === '301') {
-      return this.onAwayMessage(raw);
-    }
-    if (raw.code === '307') {
-      return this.onPartialUserData(raw, 'registered');
-    }
-    if (raw.code === '311') {
-      return this.onPartialUserData(raw, 'real-name');
-    }
-    if (raw.code === '312') {
-      return this.onPartialUserData(raw, 'server');
-    }
-    if (raw.code === '313') {
-      return this.onPartialUserData(raw, 'is-gop');
-    }
-    if (raw.code === '315') {
-      return this.onFinishWho(raw);
-    }
-    if (raw.code === '317') {
-      return this.onPartialUserData(raw, 'idle-llogin');
-    }
-    if (raw.code === '318') {
-      return this.onFinishWhois(raw);
-    }
-    if (raw.code === '319') {
-      return this.onChannelList(raw);
-    }
-    if (raw.code === '321') {
-      return this.onStartCommandList(raw);
-    }
-    if (raw.code === '322') {
-      return this.onCommandListNewChannel(raw);
-    }
-    if (raw.code === '323') {
-      return this.onFinishCommandlList(raw);
-    }
-    if (raw.code === '330') {
-      return this.onPartialUserData(raw, 'user-account');
-    }
-    if (raw.code === '332') {
-      return this.onChannelTopicChanged(raw, false);
-    }
-    if (raw.code === '352') {
-      return this.onWhoResponse(raw);
-    }
-    if (raw.code === '353') {
-      return this.onCommandNamesResponse(raw);
-    }
-    if (raw.code === '366') {
-      return this.onCommandNamesFinish(raw);
-    }
-    if (raw.code === '375') {
-      return this.onMotd(raw);
-    }
-    if (raw.code === '378') {
-      return this.onPartialUserData(raw, 'connected-from');
-    }
-    if (raw.code === '379') {
-      return this.onPartialUserData(raw, 'modes');
-    }
-    if (raw.code === '401') {
-      return this.onNonExistantNick(raw);
-    }
-    if (raw.code === '404') {
-      return this.onChannelModerated(raw);
-    }
-    if (raw.code === '433') {
-      return this.onNickAlreadyInUse(raw);
-    }
-    if (raw.code === '464') {
-      return this.onNickRequirePassword(raw);
-    }
-    if (raw.code === '474') {
-      return this.onBanned(raw);
-    }
-    if (raw.code === '671') {
-      return this.onPartialUserData(raw, 'is-secured');
-    }
-    if (raw.code === '716') {
-      return this.onServerSideIgnore(raw);
-    }
-    if (raw.code === '718') {
-      return this.onRequestPMGmode(raw);
-    }
-    if (raw.code === 'PONG') {
-      return this.onPongReceived(raw);
-    }
-    if (raw.code === 'QUIT') {
-      return this.onQuit(raw);
+    if(this.listeners[raw.code]) {
+      this.listeners[raw.code].forEach(fn => {
+        fn(raw);
+      });
+      return;
     }
     return this.onUknownMessage(raw);
   }
@@ -194,17 +140,17 @@ export class IRCParserV3 {
     // TODO: channel in moderated mode
   }
 
-  private static onChannelTopicChanged(raw: RawMessage, fromTopic: boolean) {
-    let channel;
-    let topic;
-    if(fromTopic) {
-      channel = new Channel(raw.partials[2]);
-      topic = raw.content;
-    } else {
-      let channels = /#([^\s]+)/g.exec(raw.raw) as Array<string>;
-      channel = new Channel(channels.slice(1)[0]);
-      topic = raw.content;
-    }
+  private static onChannelTopic(raw: RawMessage) {
+    const channel = new Channel(raw.partials[2]);
+    const topic = raw.content;
+    this.chanSrv.setTopic(raw.serverID, channel, topic);
+    // FIXME: notification
+  }
+
+  private static onChannelTopicChanged(raw: RawMessage) {
+    let channels = /#([^\s]+)/g.exec(raw.raw) as Array<string>;
+    let channel = new Channel(channels.slice(1)[0]);
+    let topic = raw.content;
     this.chanSrv.setTopic(raw.serverID, channel, topic);
     // FIXME: notification
   }
@@ -397,43 +343,43 @@ export class IRCParserV3 {
     //   message.date = Time.getDateStr();
   }
 
-  private static onPartialUserData(data: RawMessage, key: string) {
-    // connected-from
+  private static onPartialUserData(data: RawMessage) {
+    // connected-from 378
     // connecting from
     // :avalon.hira.io 378 Tulkalex Tulkalex :is connecting from ~Tulkalandi@167.99.172.78 167.99.172.78
     // WhoIsHandler.addWhoisPartial(raw.partials[3], 'connectedFrom', raw.body.replace('is connecting from ', ''));
 
-    // registered
+    // registered 307
     // nick registered
     // WhoIsHandler.addWhoisPartial(raw.partials[3], 'registered', raw.body);
 
-    // real-name
+    // real-name 311
     // :hiperion.hirana.net 311 Zerpiente Zerpiente Zerpiente Hirana-8kh.svf.168.181.IP * :IRCoreV2
     // WhoIsHandler.addWhoisPartial(raw.partials[3], 'realn', raw.body);
 
-    // server
+    // server 312
     // server desde donde está conectado
     // :avalon.hira.io 312 Tulkalex Tulkalex avalon.hira.io :Avalon - Frankfurt, Germany
     // WhoIsHandler.addWhoisPartial(raw.partials[3], 'server', raw.body);
 
-    // is-gop
+    // is-gop 313
     // :avalon.hira.io 313 Tulkalex Tulkalex :is a GlobalOp on Hira
     // WhoIsHandler.addWhoisPartial(raw.partials[3], 'isGOP', true);
 
-    // modes
+    // modes 379
     // :avalon.hira.io 379 Tulkalex Tulkalex :is using modes +Iiow
     // const modes = raw.body.split(' ');
     // WhoIsHandler.addWhoisPartial(raw.partials[3], 'modes', modes[modes.length - 1]);
 
-    // user-account
+    // user-account 320
     // :avalon.hira.io 330 Tulkalex Tulkalex alexander1712 :is logged in as
     // WhoIsHandler.addWhoisPartial(raw.partials[3], 'userAccount', raw.partials[4]);
 
-    // is-secured
+    // is-secured 371
     // :avalon.hira.io 671 Tulkalex Tulkalex :is using a secure connection
     // WhoIsHandler.addWhoisPartial(raw.partials[3], 'isSecured', true);
 
-    // idle-llogin
+    // idle-llogin 317
     // :avalon.hira.io 317 Tulkalex Tulkalex 6318 1602266231 :seconds idle, signon time
     // WhoIsHandler.addWhoisPartial(raw.partials[3], 'idle', raw.partials[4]);
     // WhoIsHandler.addWhoisPartial(raw.partials[3], 'lastLogin', raw.partials[5]);

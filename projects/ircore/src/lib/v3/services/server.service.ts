@@ -13,6 +13,8 @@ export class ServerService {
 
   constructor(private readonly chanSrv: ChannelsService) {
     IRCParserV3.setChanSrv(chanSrv);
+
+    IRCParserV3.addStandardListeners();
   }
 
   public connect(server: ServerData) {
