@@ -1,7 +1,22 @@
+import { ServerService } from './../server.service';
+import { ChannelsService } from './../../../services/channels.service';
+import { UserData } from './../../domain/userData';
+import { Channel } from './../../domain/channelChat';
 import { RawMessage } from './../../domain/rawMessage';
 import { MessageData } from 'ircore';
 
 export class IRCParserV3 {
+
+  private static chanSrv: ChannelsService;
+  private static currentNick: {[key: string]: string} = {};
+
+  public static setChanSrv(chanSrv: ChannelsService) {
+    this.chanSrv = chanSrv;
+  }
+
+  public static setNick(newNick: string, serverId: string) {
+    this.currentNick[serverId] = newNick;
+  }
 
   public static process(socketMessage: MessageData) {
     const raw = new RawMessage(socketMessage.message, socketMessage.uuid);
@@ -55,7 +70,7 @@ export class IRCParserV3 {
       return this.onFinishWhois(raw);
     }
     if (raw.code === '319') { // lista de canales
-      return this.onCkannelList(raw);
+      return this.onChannelList(raw);
     }
     if (raw.code === '321') {
       return this.onStartChannelList(raw);
@@ -173,9 +188,14 @@ export class IRCParserV3 {
   }
 
   private static onNickChanged(raw: RawMessage) {
-    // StatusHandler.onNickChanged(
-    //   new NickChange(raw.simplyOrigin, raw.target ? raw.target : raw.content)
-    // );
+    const newNick = raw.partials[2] ? raw.partials[2] : raw.content;
+    const originalNick = UserData.parseUser(raw.getOrigin().simplyOrigin);
+    if(originalNick.nick == this.currentNick[raw.serverID]) {
+      this.setNick(newNick, raw.serverID);
+      // TODO: me nick changed
+    } else {
+      // TODO: other nick changed
+    }
   }
 
   private static onMotd(raw: RawMessage) {
@@ -230,16 +250,31 @@ export class IRCParserV3 {
 
   private static onNickAlreadyInUse(raw: RawMessage) {
     // TODO: obtener nick anterior.
-    // StatusHandler.onNickAlreadyInUse('');
+    console.log(raw);
+    const serverData = ServerService.getServerData(raw.serverID);
+    if(this.currentNick[raw.serverID] == serverData.user.nick) {
+      // change nick to alt nick
+      serverData.websocket.send(`NICK ${serverData.user.altNick}`)
+      this.setNick(serverData.user.altNick, raw.serverID);
+    } else if(this.currentNick[raw.serverID] == serverData.user.altNick) {
+      // TODO: change to random
+    } else {
+      // TODO: nick already in use, user changed.
+    }
   }
 
-  private static onCkannelList(raw: RawMessage) {
-    // const chnlList = [];
-    // raw.content.split(' ').forEach(pmChnl => {
-
-    // });
-    // WhoIsHandler.addWhoisPartial(raw.partials[3], 'channelList', chnlList);
-    // ChannelListHandler.setChannelList(raw.partials[3], chnlList);
+  private static onChannelList(raw: RawMessage) {
+    const chnlList: Channel[] = [];
+    raw.content.split(' ').forEach(pmChnl => {
+      chnlList.push(new Channel(pmChnl));
+    });
+    const nick = UserData.parseUser(raw.partials[3]);
+    // mi nick
+    if(this.currentNick[raw.serverID].toLowerCase() == nick.nick.toLowerCase()) {
+      // TODO: lista de mis canales
+    } else {
+      // TODO: lista de canales del whois
+    }
   }
 
   private static onRequestPMGmode(raw: RawMessage) {  // requiere privado cuando tenes +g
@@ -318,29 +353,31 @@ export class IRCParserV3 {
   }
 
   private static onQuit(data: RawMessage) {
-    // QuitHandler.onQuit(new Quit(raw.simplyOrigin));
+    const userQuitted = UserData.parseUser(data.getOrigin().simplyOrigin);
+    const quitMessage = data.content;
+    // TODO: quit.
   }
 
   private static onJoin(data: RawMessage) {
-    // const join = new Join();
-    // const channel = raw.content ? raw.content : raw.target;
-    // join.channel = new Channel(channel);
-    // join.user = new User(raw.simplyOrigin);
-    // join.origin = raw.origin;
-    // JoinHandler.onJoin(join);
+    // original target = partials[2]
+    const channel = new Channel(data.content ? data.content : data.partials[2]);
+    const user = UserData.parseUser(data.getOrigin().simplyOrigin)
+    if(user.nick == this.currentNick[data.serverID]) {
+      // TODO: me join
+    } else {
+      // TODO: another join
+    }
   }
 
   private static onPart(data: RawMessage) {
-    // :Harko!~Harkolandia@harkonidaz.irc.tandilserver.com PART #SniferL4bs :"Leaving"
-    // let channel = raw.target;
-    // if (!channel) {
-    //   channel = raw.content;
-    // }
-    // const part = new Part();
-    // part.channel = new Channel(channel);
-    // part.message = raw.content;
-    // part.user = new User(raw.simplyOrigin);
-    // PartHandler.onPart(part);
+    const channel = new Channel(data.partials[2]);
+    const partMessage = data.content;
+    const userParted = UserData.parseUser(data.getOrigin().simplyOrigin);
+    if(userParted.nick == this.currentNick[data.serverID]) {
+      // TODO: me parting
+    } else {
+      // TODO: another parting
+    }
   }
 
   private static onNotice(data: RawMessage) {

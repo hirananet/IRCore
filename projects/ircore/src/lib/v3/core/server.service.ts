@@ -1,3 +1,4 @@
+import { ChannelsService } from './../../services/channels.service';
 import { IRCParserV3 } from './utils/IRCParseV3';
 import { ConnectionStatus, ConnectionStatusData } from './../../utils/WebSocket.util';
 import { CustomWebSocket } from './utils/custom.websocket';
@@ -10,12 +11,14 @@ import { MessageData } from 'ircore';
 })
 export class ServerService {
 
-  private servers: {[key: string]: ServerData} = {};
+  private static servers: {[key: string]: ServerData} = {};
 
-  constructor() { }
+  constructor(private readonly chanSrv: ChannelsService) {
+    IRCParserV3.setChanSrv(chanSrv);
+  }
 
   connect(server: ServerData) {
-    this.servers[server.serverID] = server;
+    ServerService.servers[server.serverID] = server;
     server.websocket = new CustomWebSocket();
     const proto = server.withSSL ? 'wss' : 'ws';
     const subsc = server.websocket.onStatusChanged().subscribe((status: ConnectionStatusData<any>) => {
@@ -25,6 +28,8 @@ export class ServerService {
           server.websocket.send(`HOST ${server.ircServer}`);
         }
         server.websocket.send(`USER ${server.user.user} * * : IRCoreV3`);
+        server.websocket.send(`NICK ${server.user.nick}`);
+        IRCParserV3.setNick(server.user.nick, server.serverID);
         subsc.unsubscribe();
       }
     });
@@ -40,14 +45,18 @@ export class ServerService {
   }
 
   public getServerById(id: string) {
-    return this.servers[id];
+    return ServerService.servers[id];
   }
 
   public getServerByIrcServer(ircServer: string) {
-    return this.servers[Object.keys(this.servers).find(key => this.servers[key].ircServer === ircServer)];
+    return ServerService.servers[Object.keys(ServerService.servers).find(key => ServerService.servers[key].ircServer === ircServer)];
   }
 
   public sendToServer(id: string, raw: string) {
-    this.servers[id].websocket.send(raw);
+    ServerService.servers[id].websocket.send(raw);
+  }
+
+  public static getServerData(id: string) {
+    return ServerService.servers[id];
   }
 }
