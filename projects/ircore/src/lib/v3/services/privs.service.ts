@@ -1,7 +1,9 @@
+import { RawMessage } from './../domain/rawMessage';
 import { Message } from './../domain/message';
 import { PrivChat } from './../domain/privChat';
-import { Injectable } from '@angular/core';
+import { Injectable, EventEmitter } from '@angular/core';
 import { UserData } from '../domain/userData';
+
 
 @Injectable({
   providedIn: 'root'
@@ -9,6 +11,7 @@ import { UserData } from '../domain/userData';
 export class PrivsService {
 
   private privsOpened: {[serverID: string]: PrivChat[]} = {};
+  public readonly notifications: EventEmitter<{raw: RawMessage, message: Message}> = new EventEmitter<{raw: RawMessage, message: Message}>();
 
   constructor() { }
 

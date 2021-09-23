@@ -1,7 +1,8 @@
+import { RawMessage } from './../domain/rawMessage';
 import { Message } from './../domain/message';
-import { UModes, SimplyUser, UserData } from './../domain/userData';
+import { UModes, SimplyUser } from './../domain/userData';
 import { Channel } from '../domain/channelChat';
-import { Injectable } from '@angular/core';
+import { Injectable, EventEmitter } from '@angular/core';
 
 @Injectable({
   providedIn: 'root'
@@ -9,6 +10,7 @@ import { Injectable } from '@angular/core';
 export class ChannelsService {
 
   private channelsOpened: {[serverID: string]: Channel[]} = {};
+  public readonly notifications: EventEmitter<{raw: RawMessage, type: string, parsedObject: any}> = new EventEmitter<{raw: RawMessage, type: string, parsedObject: any}>();
 
   constructor() { }
 
