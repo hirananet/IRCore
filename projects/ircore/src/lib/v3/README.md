@@ -1,4 +1,4 @@
-# IRCore v3
+# IRCore
 
 Angular IRC Core services.
 
@@ -10,4 +10,6 @@ This library works fine with Inspircd and Anope (not tested this version in athe
 # Services
 
 # Notifications Handlers
+
+# IRCParser V3
 

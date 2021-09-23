@@ -45,8 +45,7 @@ export class IRCParserV3 {
     if (raw.code === 'KICK') {
       return this.onKick(raw);
     }
-    // functions return true if continue parsing.
-    if (raw.code === '301') { // away message
+    if (raw.code === '301') {
       return this.onAwayMessage(raw);
     }
     if (raw.code === '307') {
@@ -70,7 +69,7 @@ export class IRCParserV3 {
     if (raw.code === '318') {
       return this.onFinishWhois(raw);
     }
-    if (raw.code === '319') { // lista de canales
+    if (raw.code === '319') {
       return this.onChannelList(raw);
     }
     if (raw.code === '321') {
@@ -88,7 +87,7 @@ export class IRCParserV3 {
     if (raw.code === '332') {
       return this.onChannelTopicChanged(raw, false);
     }
-    if (raw.code === '352') { // user info (WHO response)
+    if (raw.code === '352') {
       return this.onWhoResponse(raw);
     }
     if (raw.code === '353') {
