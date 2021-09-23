@@ -1,10 +1,8 @@
-import { ChannelsService } from './../../services/channels.service';
-import { IRCParserV3 } from './utils/IRCParseV3';
-import { ConnectionStatus, ConnectionStatusData } from './../../utils/WebSocket.util';
-import { CustomWebSocket } from './utils/custom.websocket';
-import { ServerData } from './utils/server.data';
+import { ChannelsService } from '../../services/channels.service';
+import { IRCParserV3 } from '../core/IRCParseV3';
+import { CustomWebSocket, ConnectionStatus, ConnectionStatusData, MessageData } from '../core/custom.websocket';
+import { ServerData } from '../core/server.data';
 import { Injectable } from '@angular/core';
-import { MessageData } from 'ircore';
 
 @Injectable({
   providedIn: 'root'
@@ -17,7 +15,7 @@ export class ServerService {
     IRCParserV3.setChanSrv(chanSrv);
   }
 
-  connect(server: ServerData) {
+  public connect(server: ServerData) {
     ServerService.servers[server.serverID] = server;
     server.websocket = new CustomWebSocket();
     const proto = server.withSSL ? 'wss' : 'ws';

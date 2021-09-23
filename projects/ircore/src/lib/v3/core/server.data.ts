@@ -1,4 +1,5 @@
 import { CustomWebSocket } from './custom.websocket';
+
 export class ServerData {
 
   public serverID: string;

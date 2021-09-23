@@ -4,7 +4,7 @@ export class RawMessage {
   public info: string;
   public code: string;
   public partials: string[];
-  public tags: string[][];
+  public tags: {[key: string]: string} = {};
   public raw: string;
   public serverID: string;
   private origin: OriginData;
@@ -15,7 +15,10 @@ export class RawMessage {
     const tags = /@((;?)([^\s=]+)=([^\s;]+))+/.exec(msg);
     if(tags) {
       let tagStr = tags[0].substring(1);
-      this.tags = tagStr.split(';').map(str => str.split('='));
+      tagStr.split(';').forEach(kv => {
+        const kvs = kv.split('=');
+        this.tags[kvs[0]] = kvs[1];
+      });
     }
     const r = /:([^:]+):?(.*)/.exec(msg);
     this.info = r[1];

@@ -1,9 +1,10 @@
-import { ServerService } from './../server.service';
-import { ChannelsService } from './../../../services/channels.service';
-import { UserData } from './../../domain/userData';
-import { Channel } from './../../domain/channelChat';
-import { RawMessage } from './../../domain/rawMessage';
-import { MessageData } from 'ircore';
+import { MessageData } from './custom.websocket';
+import { Message } from '../domain/message';
+import { UserData } from '../domain/userData';
+import { Channel } from '../domain/channelChat';
+import { RawMessage } from '../domain/rawMessage';
+import { ServerService } from '../services/server.service';
+import { ChannelsService } from '../services/channels.service';
 
 export class IRCParserV3 {
 
@@ -115,7 +116,7 @@ export class IRCParserV3 {
       return this.onNickAlreadyInUse(raw);
     }
     if (raw.code === '464') {
-      return this.onUserRequirePassword(raw);
+      return this.onNickRequirePassword(raw);
     }
     if (raw.code === '474') {
       return this.onBanned(raw);
@@ -139,27 +140,13 @@ export class IRCParserV3 {
   }
 
   private static onPrivMSG(raw: RawMessage) {
-    // const meMsg = MessageHandler.getMeAction(raw);
-    // const message = new IndividualMessage();
-    // message.author = raw.simplyOrigin;
-    // if (meMsg) {
-    //   message.message = meMsg[1];
-    //   message.meAction = true;
-    // } else {
-    //   message.message = raw.content;
-    //   message.meAction = false;
-    // }
-    // message.time = Time.getTime();
-    // message.date = Time.getDateStr();
-    // if (raw.target === actualNick) { // privado
-    //   message.messageType = IndividualMessageTypes.PRIVMSG;
-    // } else {
-    //   message.messageType = IndividualMessageTypes.CHANMSG;
-    //   message.channel = raw.target;
-    // }
-    // message.mention = message.message ? message.message.indexOf(actualNick) >= 0 : false;
-    // message.mention = !message.mention ? message.message.indexOf('@all') >= 0 : true;
-    // MessageHandler.onMessage(message);
+    const message = Message.parseMessage(raw, this.currentNick[raw.serverID]);
+    if(raw.partials[2] == this.currentNick[raw.serverID]) {
+      // TODO: priv message:
+    } else {
+      // TODO: channel message:
+      const channel = new Channel(raw.partials[2]);
+    }
   }
 
   private static onChannelUser(raw: RawMessage) {
@@ -199,50 +186,51 @@ export class IRCParserV3 {
   }
 
   private static onMotd(raw: RawMessage) {
-    // MotdHandler.motdResponse.emit(raw);
+    // TODO: MOTD
   }
 
-  private static onUserRequirePassword(raw: RawMessage) {
-    // MotdHandler.requirePasswordResponse.emit(raw);
+  private static onNickRequirePassword(raw: RawMessage) {
+    // TODO: alert nick require password
   }
 
   private static onChannelModerated(raw: RawMessage) {
-    // ModeratedHandler.channelModerated.emit(raw);
+    // TODO: channel in moderated mode
   }
 
   private static onChannelTopicChanged(raw: RawMessage, fromTopic: boolean) {
-
-    // from topic == false:
-    // const channels = ChannelStatusHandler.findChannels(rawMessage);
-    // ChannelStatusHandler.setChannelTopic(channels[0], raw.content);
-
-    // from topic == true:
-    // ChannelStatusHandler.setChannelTopic(raw.target, raw.content);
-
+    let channel;
+    let topic;
+    if(fromTopic) {
+      channel = new Channel(raw.partials[2]);
+      topic = raw.content;
+    } else {
+      let channels = /#([^\s]+)/g.exec(raw.raw) as Array<string>;
+      channel = new Channel(channels.slice(1)[0]);
+      topic = raw.content;
+    }
+    // TODO: set topic to channel
   }
 
   private static onServerSideIgnore(raw: RawMessage) {
-    // const ignore = new Away();
-    // ignore.author = raw.partials[3];
-    // ignore.message = raw.content;
-    // IgnoreHandler.onIgnore(ignore);
+    const author = raw.partials[3];
+    const message = raw.content;
+    // TODO: server ignored alert
   }
 
   private static onNonExistantNick(raw: RawMessage) {
-    // const away = new Away();
-    // away.author = raw.partials[3];
-    // away.message = raw.content;
-    // AwayHandler.onNonExistant(away);
+    const author = raw.partials[3];
+    const message = raw.content;
+    // TODO: non existant nick
   }
 
   private static onAwayMessage(raw: RawMessage) {
-    // const away = new Away();
-    // away.author = raw.partials[3];
-    // away.message = raw.content;
-    // AwayHandler.onAway(away);
+    const author = raw.partials[3];
+    const message = raw.content;
+    // TODO: away message
   }
 
   private static onBanned(raw: RawMessage) {
+    console.log(raw);
     // TODO: obtener canal.
     // StatusHandler.onBanned('');
     // return;
@@ -280,7 +268,8 @@ export class IRCParserV3 {
   private static onRequestPMGmode(raw: RawMessage) {  // requiere privado cuando tenes +g
     // :avalon.hira.io 718 Tulkalex Tulkaz ~Harkito@net-j7j.cur.32.45.IP :is messaging you, and you have user mode +g set.
     // Use /ACCEPT +Tulkaz to allow.
-    // GmodeHandler.privateRequest(raw.partials[3]);
+    const author = raw.partials[3];
+    // TODO:send invite request
   }
 
   private static onFinishWhois(raw: RawMessage) {
@@ -458,7 +447,7 @@ export class IRCParserV3 {
   private static onPongReceived(raw: RawMessage) { }
 
   private static onUknownMessage(raw: RawMessage) {
-    // ServerHandler.onServerResponse(raw);
+    // TODO: generic message
   }
 
 }

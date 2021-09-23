@@ -1,4 +1,4 @@
-import {webSocket, WebSocketSubject} from 'rxjs/webSocket';
+import { webSocket, WebSocketSubject} from 'rxjs/webSocket';
 import { Observable, Subject } from 'rxjs';
 import { EventEmitter } from '@angular/core';
 
