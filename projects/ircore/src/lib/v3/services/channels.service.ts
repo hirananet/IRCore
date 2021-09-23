@@ -1,5 +1,5 @@
 import { Message } from './../domain/message';
-import { UModes, SimplyUser } from './../domain/userData';
+import { UModes, SimplyUser, UserData } from './../domain/userData';
 import { Channel } from '../domain/channelChat';
 import { Injectable } from '@angular/core';
 
@@ -37,12 +37,38 @@ export class ChannelsService {
     }
   }
 
+  public updateUserModeInChannel(serverID: string, mode: {user: SimplyUser, channel: Channel, add: boolean, mode: string}) {
+    const channel = this.getChannel(serverID, mode.channel);
+    if(!channel) {
+      console.error('Channel not found updating user mode');
+      return;
+    }
+    const user = channel.users.find(u => u.userData.fullNick.nick == mode.user.nick);
+    if(mode.add) {
+      user.channelModes.push(mode.mode);
+    } else {
+      const modeIdx = user.channelModes.findIndex(m => m == mode.mode);
+      if(modeIdx >= 0) {
+        delete user.channelModes[modeIdx];
+      }
+    }
+  }
+
+  public updateChannelMode(serverID: string, mode: {channel: Channel, mode: string}) {
+    const channel = this.getChannel(serverID, mode.channel);
+    if(!channel) {
+      console.error('Channel not found updating mode');
+      return;
+    }
+    channel.channelModes.push(mode.mode);
+  }
+
   public setTopic(serverID: string, channel: Channel, topic: string) {
     this.channelsOpened[serverID].find(chan => chan.name = channel.name).topic = topic;
   }
 
-  public getChannel(serverID: string, channelName: Channel) {
-    return this.channelsOpened[serverID].find(chan => chan.name == channelName.name);
+  public getChannel(serverID: string, channel: Channel) {
+    return this.channelsOpened[serverID].find(chan => chan.name == channel.name);
   }
 
   public removeUser(serverID: string, channel: Channel, user: SimplyUser) {

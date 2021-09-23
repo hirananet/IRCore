@@ -1,3 +1,4 @@
+import { ModeParser } from './ModeParser';
 import { MessageData } from './custom.websocket';
 import { Message } from '../domain/message';
 import { UserData } from '../domain/userData';
@@ -149,21 +150,23 @@ export class IRCParserV3 {
   }
 
   private static onModeCommand(raw: RawMessage) { // user modes in channel changed
-    // const mode = ModeHandler.modeParser(rawMessage);
-    // if(mode[3]) {
-    //   const nmode = new NewMode();
-    //   nmode.userTarget = new User(mode[3]);
-    //   nmode.channelTarget = raw.target;
-    //   nmode.modeAdded = mode[1] === '+';
-    //   nmode.mode = mode[2];
-    //   ModeHandler.changeMode(nmode);
-    // } else {
-    //   const nmode = new NewMode();
-    //   nmode.channelTarget = raw.target;
-    //   nmode.userTarget = new User(raw.target);
-    //   nmode.mode = mode[2];
-    //   ModeHandler.changeMode(nmode);
-    // }
+    const mode = ModeParser.parse(raw.raw);
+    console.log('Mode: ', mode);
+    if(mode[3]) {
+      this.chanSrv.updateUserModeInChannel(raw.serverID, {
+        user: UserData.parseUser(mode[3]),
+        channel: new Channel(raw.partials[2]),
+        add: mode[1] === '+',
+        mode: mode[2]
+      });
+      // FIXME: notification
+    } else {
+      this.chanSrv.updateChannelMode(raw.serverID, {
+        channel: new Channel(raw.partials[2]),
+        mode: mode[2]
+      });
+      // FIXME: notification
+    }
   }
 
   private static onNickChanged(raw: RawMessage) {
