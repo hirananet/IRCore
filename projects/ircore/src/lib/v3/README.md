@@ -11,7 +11,19 @@ This library works fine with Inspircd and Anope (not tested this version in athe
 
 # Event Handling
 
-this.chanSrv.notifications
+### this.notices.notifications
+
+types:
+* motd: message of te day received.
+* require-pass: 464 (usually for znc logins).
+* channel-moderated: channel is in moderated mode.
+* sside-ignored: server side ignore.
+* non-existant: message to non existant nick or channel
+* away: away message
+* banned: from channel
+* nick-in-use: this nick is in use
+
+### this.channels.notifications
 
 types:
 * message: new message in channel

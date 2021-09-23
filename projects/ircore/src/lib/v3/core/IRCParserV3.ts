@@ -166,15 +166,28 @@ export class IRCParserV3 {
   }
 
   private static onMotd(raw: RawMessage) {
-    // TODO: MOTD
+    this.noticeSrv.notifications.emit({
+      raw,
+      type: 'motd'
+    });
   }
 
   private static onNickRequirePassword(raw: RawMessage) {
-    // TODO: alert nick require password / ZNC?
+    this.noticeSrv.notifications.emit({
+      raw,
+      type: 'require-pass'
+    });
   }
 
   private static onChannelModerated(raw: RawMessage) {
-    // TODO: channel in moderated mode
+    console.log('Channel moderated', raw);
+    this.noticeSrv.notifications.emit({
+      raw,
+      type: 'channel-moderated',
+      parsedObject: {
+        // TODO: channel in moderated mode
+      }
+    });
   }
 
   private static onChannelTopic(raw: RawMessage) {
@@ -209,32 +222,64 @@ export class IRCParserV3 {
   private static onServerSideIgnore(raw: RawMessage) {
     const author = raw.partials[3];
     const message = raw.content;
-    // TODO: server ignored alert
+    this.noticeSrv.notifications.emit({
+      raw,
+      type: 'sside-ignored',
+      parsedObject: {
+        author,
+        message
+      }
+    });
   }
 
   private static onNonExistantNick(raw: RawMessage) {
     const author = raw.partials[3];
     const message = raw.content;
-    // TODO: non existant nick
+    this.noticeSrv.notifications.emit({
+      raw,
+      type: 'non-existant',
+      parsedObject: {
+        author,
+        message
+      }
+    });
   }
 
   private static onAwayMessage(raw: RawMessage) {
     const author = raw.partials[3];
     const message = raw.content;
-    // TODO: away message
+    this.noticeSrv.notifications.emit({
+      raw,
+      type: 'away',
+      parsedObject: {
+        author,
+        message
+      }
+    });
   }
 
   private static onBanned(raw: RawMessage) {
-    console.log(raw);
-    // TODO: obtener canal.
-    // StatusHandler.onBanned('');
-    // return;
+    console.log('Banned messagE: ', raw);
+    this.noticeSrv.notifications.emit({
+      raw,
+      type: 'banned',
+      parsedObject: {
+        // TODO: obtener canal.
+      }
+    });
   }
 
   private static onNickAlreadyInUse(raw: RawMessage) {
     // TODO: obtener nick anterior.
-    console.log(raw);
+    console.log('Nick in use', raw);
     const serverData = ServerService.getServerData(raw.serverID);
+    this.noticeSrv.notifications.emit({
+      raw,
+      type: 'nick-in-use',
+      parsedObject: {
+
+      }
+    });
     if(this.currentNick[raw.serverID].toLowerCase() == serverData.user.nick.toLowerCase()) {
       // change nick to alt nick
       serverData.websocket.send(`NICK ${serverData.user.altNick}`)
@@ -411,7 +456,8 @@ export class IRCParserV3 {
         type: 'leave',
         parsedObject: {
           channel,
-          userJoined: userParted
+          userJoined: userParted,
+          message: partMessage
         }
       });
     }

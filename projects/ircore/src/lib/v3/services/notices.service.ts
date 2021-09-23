@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { RawMessage } from './../domain/rawMessage';
+import { Injectable, EventEmitter } from '@angular/core';
 
 @Injectable({
   providedIn: 'root'
@@ -6,6 +7,7 @@ import { Injectable } from '@angular/core';
 export class NoticesService {
 
   private notices: {[serverID: string]: {msg: string, isNotice: boolean}[]} = {};
+  public readonly notifications: EventEmitter<{raw: RawMessage, type: string, parsedObject?: any}> = new EventEmitter<{raw: RawMessage, type: string, parsedObject?: any}>();
 
   constructor() { }
 
