@@ -183,7 +183,7 @@ export class IRCParserV3 {
   }
 
   private static onNickRequirePassword(raw: RawMessage) {
-    // TODO: alert nick require password
+    // TODO: alert nick require password / ZNC?
   }
 
   private static onChannelModerated(raw: RawMessage) {
