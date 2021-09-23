@@ -95,7 +95,7 @@ export class IRCParserV3 {
       return this.onCommandNamesResponse(raw);
     }
     if (raw.code === '366') {
-      return this.onChannelUser(raw);
+      return this.onCommandNamesFinish(raw);
     }
     if (raw.code === '375') {
       return this.onMotd(raw);
@@ -149,14 +149,7 @@ export class IRCParserV3 {
     }
   }
 
-  private static onChannelUser(raw: RawMessage) {
-    // const channel = raw.partials[3];
-    // const chnlObj = new Channel(channel);
-    // UsersHandler.addUsersToChannel(chnlObj.name, IRCParserV2.usersInChannel[channel]);
-    // IRCParserV2.usersInChannel[channel] = [];
-  }
-
-  private static onModeCommand(raw: RawMessage) {
+  private static onModeCommand(raw: RawMessage) { // user modes in channel changed
     // const mode = ModeHandler.modeParser(rawMessage);
     // if(mode[3]) {
     //   const nmode = new NewMode();
@@ -179,7 +172,7 @@ export class IRCParserV3 {
     const originalNick = UserData.parseUser(raw.getOrigin().simplyOrigin);
     if(originalNick.nick.toLowerCase() == this.currentNick[raw.serverID].toLowerCase()) {
       this.setNick(newNick, raw.serverID);
-      // TODO: me nick changed
+      // FIXME: notification me nick changed
     }
     this.chanSrv.nickChangeInAllChannels(raw.serverID, originalNick, UserData.parseUser(newNick));
     // FIXME: notification
@@ -330,10 +323,6 @@ export class IRCParserV3 {
     // }
   }
 
-  private static onFinishWho(raw: RawMessage) {
-    // End of who
-  }
-
   private static onKick(data: RawMessage) {
     const channel = new Channel(data.partials[2]);
     const operator = data.content;
@@ -449,10 +438,18 @@ export class IRCParserV3 {
     // WhoIsHandler.addWhoisPartial(raw.partials[3], 'lastLogin', raw.partials[5]);
   }
 
-  private static onPongReceived(raw: RawMessage) { }
-
   private static onUknownMessage(raw: RawMessage) {
     // TODO: generic message
+  }
+
+  private static onPongReceived(raw: RawMessage) { }
+
+  private static onCommandNamesFinish(raw: RawMessage) {
+    // const channel = raw.partials[3];
+  }
+
+  private static onFinishWho(raw: RawMessage) {
+    // End of who
   }
 
 }
