@@ -11,7 +11,7 @@ import { UserData } from '../domain/userData';
 export class PrivsService {
 
   private privsOpened: {[serverID: string]: PrivChat[]} = {};
-  public readonly notifications: EventEmitter<{raw: RawMessage, message?: Message, type: string, parsedObject?: any}> = new EventEmitter<{raw: RawMessage, message?: Message, type: string, parsedObject?: any}>();
+  public readonly notifications: EventEmitter<{raw: RawMessage, type: string, parsedObject?: any}> = new EventEmitter<{raw: RawMessage, type: string, parsedObject?: any}>();
 
   constructor() { }
 

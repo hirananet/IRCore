@@ -104,7 +104,7 @@ export class IRCParserV3 {
       this.privSrv.onNewMessage(raw.serverID, origin, origin, message);
       this.privSrv.notifications.emit({
         raw,
-        message,
+        parsedObject: message,
         type: 'message'
       });
     } else {
