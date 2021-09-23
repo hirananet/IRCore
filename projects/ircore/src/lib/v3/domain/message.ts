@@ -11,7 +11,7 @@ export class Message {
   public quoteID?: string;
   public isMeCommand: boolean; // /me command.
   public preloaded: boolean; // loaded from history?
-  public externalNotice?: string; // is an external notice to channel
+  public externalNotice?: boolean; // is an external notice to channel
   public coloredMessage?: string; // for modes and others speacial messages.
   public channel: string;
   public tags: {[key:string]: string};

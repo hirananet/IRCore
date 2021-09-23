@@ -6,10 +6,12 @@ import { Channel } from '../domain/channelChat';
 import { RawMessage } from '../domain/rawMessage';
 import { ServerService } from '../services/server.service';
 import { ChannelsService } from '../services/channels.service';
+import { NoticesService } from '../services/notices.service';
 
 export class IRCParserV3 {
 
   private static chanSrv: ChannelsService;
+  private static noticeSrv: NoticesService;
   private static currentNick: {[key: string]: string} = {};
 
   public static setChanSrv(chanSrv: ChannelsService) {
@@ -366,21 +368,25 @@ export class IRCParserV3 {
   }
 
   private static onNotice(data: RawMessage) {
-    // if(raw.target[0] === '#') {
-    //   // notice a un canal
-    //   const message = new IndividualMessage();
-    //   message.author = raw.simplyOrigin;
-    //   message.message = raw.content;
-    //   message.meAction = false;
-    //   message.externalNotice = true;
-    //   message.time = Time.getTime();
-    //   message.date = Time.getDateStr();
-    //   message.messageType = IndividualMessageTypes.CHANMSG;
-    //   message.channel = raw.target;
-    //   MessageHandler.onMessage(message);
-    //   return;
+    if(data.partials[2][0] === '#') {
+      const channel = new Channel(data.partials[2]);
+      // channel notice external
+      const msg = new Message();
+      msg.author = data.getOrigin().simplyOrigin;
+      msg.channel = channel.name;
+      msg.content = data.content;
+      msg.preloaded = false;
+      msg.externalNotice = true;
+      msg.haveMention = false;
+      this.chanSrv.addMessageToChannel(data.serverID, channel, msg);
+      // FIXME: notification?
+    } else {
+      // raw notice
+      this.noticeSrv.addNoticeToServer(data.serverID, data.raw, true);
+      // FIXME: notification?
+    }
+
     // } else if (raw.simplyOrigin && raw.simplyOrigin !== '*status' && raw.target[0] === '#') {
-    //   // notices generales
     //   const message = new IndividualMessage();
     //   message.messageType = IndividualMessageTypes.NOTIFY;
     //   message.author = raw.simplyOrigin;
@@ -389,13 +395,6 @@ export class IRCParserV3 {
     //   message.channel = raw.target;
     //   message.time = Time.getTime();
     //   message.date = Time.getDateStr();
-    //   MessageHandler.onMessage(message);
-    //   return;
-    // } else {
-    //   // notice
-    //   ServerHandler.onServerNoticeResponse(raw);
-    //   return;
-    // }
   }
 
   private static onPartialUserData(data: RawMessage, key: string) {
@@ -441,7 +440,8 @@ export class IRCParserV3 {
   }
 
   private static onUknownMessage(raw: RawMessage) {
-    // TODO: generic message
+    this.noticeSrv.addNoticeToServer(raw.serverID, raw.raw, false);
+    // FIXME: notification?
   }
 
   private static onPongReceived(raw: RawMessage) { }
