@@ -71,6 +71,13 @@ export class ServerService {
     this.sendToServer(serverID, 'JOIN ' + channel)
   }
 
+  public leave(serverID: string, channel: string) {
+    if(channel[0] != '#') {
+      channel = '#' + channel;
+    }
+    this.sendToServer(serverID, 'PART ' + channel)
+  }
+
   public setNick(serverID: string, nick: string) {
     IRCParserV3.setNick(nick, serverID);
     this.sendToServer(serverID, 'NICK ' + nick);

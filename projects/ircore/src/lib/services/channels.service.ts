@@ -20,6 +20,9 @@ export class ChannelsService {
   }
 
   public addChannel(serverID: string, channel: Channel) {
+    if(!this.channelsOpened[serverID]) {
+      this.channelsOpened[serverID] = [];
+    }
     this.channelsOpened[serverID].push(channel);
   }
 
