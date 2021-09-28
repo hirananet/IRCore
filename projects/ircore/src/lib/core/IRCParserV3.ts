@@ -1,4 +1,3 @@
-import { RawMessage } from './../domain/rawMessage';
 import { GlobUserService } from './../services/glob-user.service';
 import { PrivsService } from './../services/privs.service';
 import { ModeParser } from './ModeParser';
