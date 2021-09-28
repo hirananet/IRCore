@@ -45,9 +45,47 @@ export class ServerService {
       server.websocket.connect(`${proto}://${server.gatewayServer}:${server.gatewayPort}`, server.serverID);
     }
     server.websocket.onMessageReceived().subscribe((message: MessageData) => {
+      if (message.message.indexOf('PING') === 0) {
+        const pingResp = message.message.slice(5);
+        this.sendToServer(message.uuid, 'PONG ' + pingResp);
+        return;
+      }
+      if (message.message.indexOf('ERROR') === 0) {
+        console.error('Received error from stream: ', message.message);
+        return;
+      }
       console.log('RAW: ' + message);
       IRCParserV3.process(message);
     });
+  }
+
+  public sendWhox(serverID: string, channel: string) {
+    channel = channel[0] === '#' ? channel : '#' + channel;
+    this.sendToServer(serverID, 'WHO ' + channel);
+  }
+
+  public join(serverID: string, channel: string) {
+    if(channel[0] != '#') {
+      channel = '#' + channel;
+    }
+    this.sendToServer(serverID, 'JOIN ' + channel)
+  }
+
+  public setNick(serverID: string, nick: string) {
+    IRCParserV3.setNick(nick, serverID);
+    this.sendToServer(serverID, 'NICK ' + nick);
+  }
+
+  public identify(serverID: string, password: string) {
+    this.sendToServer(serverID, 'PRIVMSG NickServ identify ' + password);
+  }
+
+  public serverPass(serverID: string, user: string, password: string) {
+    this.sendToServer(serverID, 'PASS ' + user + ':' + password);
+  }
+
+  public disconnect(serverID: string): void {
+    this.getServerById(serverID).websocket.disconnect();
   }
 
   public getServerById(id: string) {
@@ -58,8 +96,17 @@ export class ServerService {
     return ServerService.servers[Object.keys(ServerService.servers).find(key => ServerService.servers[key].ircServer === ircServer)];
   }
 
-  public sendToServer(id: string, raw: string) {
-    ServerService.servers[id].websocket.send(raw);
+  public sendToServer(serverID: string, raw: string) {
+    this.getServerById(serverID).websocket.send(raw);
+  }
+
+  public sendTo(serverID: string, chanOrNick: string, message: string) {
+    const MAX_CHARS = 450;
+    while(message.length > MAX_CHARS) {
+      this.sendToServer(serverID, `PRIVMSG ${chanOrNick} :${message.substr(0, MAX_CHARS)}`);
+      message = message.substr(MAX_CHARS);
+    }
+    this.sendToServer(serverID, `PRIVMSG ${chanOrNick} :${message}`);
   }
 
   public static getServerData(id: string) {

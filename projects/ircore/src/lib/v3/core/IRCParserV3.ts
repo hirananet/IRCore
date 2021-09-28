@@ -3,7 +3,7 @@ import { PrivsService } from './../services/privs.service';
 import { ModeParser } from './ModeParser';
 import { MessageData } from './custom.websocket';
 import { Message } from '../domain/message';
-import { UserData } from '../domain/userData';
+import { UModes, UserData } from '../domain/userData';
 import { Channel } from '../domain/channelChat';
 import { RawMessage } from '../domain/rawMessage';
 import { ServerService } from '../services/server.service';
@@ -366,30 +366,29 @@ export class IRCParserV3 {
   }
 
   private static onWhoResponse(raw: RawMessage) {
-    // const data = WhoHandler.WHOUserParser(rawMessage);
-    // if (data) {
-    //   const whoData = new Who();
-    //   whoData.serverFrom = data[7];
-    //   whoData.nick = data[8];
-    //   whoData.isAway = data[9] === 'G';
-    //   whoData.isNetOp = data[10] === '*';
-    //   whoData.rawMsg = rawMessage;
-    //   const mod = data[11];
-    //   if (mod === '~') {
-    //     whoData.mode = UModes.FOUNDER;
-    //   } else if (mod === '&') {
-    //     whoData.mode = UModes.ADMIN;
-    //   } else if (mod === '@') {
-    //     whoData.mode = UModes.OPER;
-    //   } else if (mod === '%') {
-    //     whoData.mode = UModes.HALFOPER;
-    //   } else if (mod === '+') {
-    //     whoData.mode = UModes.VOICE;
-    //   }
-    //   WhoHandler.addWhoData(data[8], whoData);
-    // } else {
-    //   console.error('BAD WHO RESPONSE PARSED: ', rawMessage, data);
-    // }
+    const data = /:([^\s]+)\s([0-9]+)\s([^\s]+)\s([^\s]+)\s([^\s]+)\s([^\s]+)\s([^\s]+)\s([^\s]+)\s(H|G)(\*?)(\~|\&|\@|\%|\+)?/.exec(raw.raw);
+    if (data) {
+      const user = this.globUsrSrv.getUser(raw.serverID, UserData.parseUser(data[8]));
+      user.fullNick.origin = data[7];
+      user.fullNick.nick = data[8];
+      user.isAway = data[9] === 'G';
+      user.netOp = data[10] === '*';
+      const mod = data[11];
+      console.log('WHO Channel? [2]', raw.partials, data)
+      if (mod === '~') {
+        user.updateModes(new Channel(raw.partials[2]), [UModes.FOUNDER]);
+      } else if (mod === '&') {
+        user.updateModes(new Channel(raw.partials[2]), [UModes.ADMIN]);
+      } else if (mod === '@') {
+        user.updateModes(new Channel(raw.partials[2]), [UModes.OPER]);
+      } else if (mod === '%') {
+        user.updateModes(new Channel(raw.partials[2]), [UModes.HALFOPER]);
+      } else if (mod === '+') {
+        user.updateModes(new Channel(raw.partials[2]), [UModes.VOICE]);
+      }
+    } else {
+      console.error('BAD WHO RESPONSE PARSED: ', raw.raw, data);
+    }
   }
 
   private static onKick(data: RawMessage) {
