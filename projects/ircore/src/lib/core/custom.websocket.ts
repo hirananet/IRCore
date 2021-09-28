@@ -35,7 +35,7 @@ export class CustomWebSocket {
         const status = new ConnectionStatusData<any>();
         status.status = ConnectionStatus.ERROR;
         status.data = {uuid, err};
-        console.error('WS errror', status.data);
+        console.error('WS errror', uuid, err);
         this.statusChanged.emit(status);
         this.connected = false;
       });
