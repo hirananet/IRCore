@@ -18,7 +18,7 @@ export class ServerData {
 
 
   // User connection data //
-  public user: User;
+  public user: User = new User();
   /////////////////////////
 
   public websocket?: CustomWebSocket;
