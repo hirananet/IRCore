@@ -1,3 +1,4 @@
+import { GlobUserService } from './glob-user.service';
 import { PrivsService } from './privs.service';
 import { NoticesService } from './notices.service';
 import { ChannelsService } from './channels.service';
@@ -11,12 +12,14 @@ import { Injectable } from '@angular/core';
 })
 export class ServerService {
 
+  private static readonly VERSION = '3.0';
   private static servers: {[key: string]: ServerData} = {};
 
-  constructor(chanSrv: ChannelsService, noticeSrv: NoticesService, privSrv: PrivsService) {
+  constructor(chanSrv: ChannelsService, noticeSrv: NoticesService, privSrv: PrivsService, globUsr: GlobUserService) {
     IRCParserV3.setChanSrv(chanSrv);
     IRCParserV3.setNoticeSrv(noticeSrv)
     IRCParserV3.setPrivSrv(privSrv);
+    IRCParserV3.setGlobUserSrv(globUsr);
     IRCParserV3.addDefaultListeners();
   }
 
@@ -30,7 +33,7 @@ export class ServerService {
         if (!server.withWebSocket) {
           server.websocket.send(`HOST ${server.ircServer}`);
         }
-        server.websocket.send(`USER ${server.user.user} * * : IRCoreV3`);
+        server.websocket.send(`USER ${server.user.user} * * : IRCoreV${ServerService.VERSION}`);
         server.websocket.send(`NICK ${server.user.nick}`);
         IRCParserV3.setNick(server.user.nick, server.serverID);
         subsc.unsubscribe();

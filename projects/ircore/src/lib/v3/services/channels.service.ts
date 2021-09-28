@@ -1,3 +1,4 @@
+import { GlobUserService } from './glob-user.service';
 import { RawMessage } from './../domain/rawMessage';
 import { Message } from './../domain/message';
 import { UModes, SimplyUser } from './../domain/userData';
@@ -12,7 +13,7 @@ export class ChannelsService {
   private channelsOpened: {[serverID: string]: Channel[]} = {};
   public readonly notifications: EventEmitter<{raw: RawMessage, type: string, parsedObject: any}> = new EventEmitter<{raw: RawMessage, type: string, parsedObject: any}>();
 
-  constructor() { }
+  constructor(private gUser: GlobUserService) { }
 
   public newChannelList(serverID: string, channels: Channel[]) {
     this.channelsOpened[serverID] = channels;
@@ -23,11 +24,14 @@ export class ChannelsService {
   }
 
   public addUserToChannel(serverID: string, channel: Channel, user: SimplyUser) {
-    const modes = [];
+    // check if channel exists?
+    const userData = this.gUser.getUser(serverID, user);
+    let modes = [];
     if(user.mode != UModes.UNDEFINED) {
       modes.push(user.mode);
     }
-    this.getChannel(serverID, channel).addUserToChannel(user.toUser(), modes);
+    userData.updateModes(channel, modes);
+    this.getChannel(serverID, channel).addUserToChannel(userData);
   }
 
   public removeChannel(serverID: string, channel: Channel) {
@@ -40,19 +44,11 @@ export class ChannelsService {
   }
 
   public updateUserModeInChannel(serverID: string, mode: {user: SimplyUser, channel: Channel, add: boolean, mode: string}) {
-    const channel = this.getChannel(serverID, mode.channel);
-    if(!channel) {
-      console.error('Channel not found updating user mode');
-      return;
-    }
-    const user = channel.users.find(u => u.userData.fullNick.nick == mode.user.nick);
+    const userData = this.gUser.getUser(serverID, mode.user);
     if(mode.add) {
-      user.channelModes.push(mode.mode);
+      userData.updateModes(mode.channel, [mode.mode]);
     } else {
-      const modeIdx = user.channelModes.findIndex(m => m == mode.mode);
-      if(modeIdx >= 0) {
-        delete user.channelModes[modeIdx];
-      }
+      userData.removeMode(mode.channel, mode.mode);
     }
   }
 
@@ -91,8 +87,8 @@ export class ChannelsService {
   public nickChangeInAllChannels(serverID: string, original: SimplyUser, newNick: SimplyUser) {
     this.channelsOpened[serverID].forEach(chan => {
       chan.users.forEach(user => {
-        if(user.userData.fullNick.nick == original.nick) {
-          user.userData.fullNick.nick = newNick.nick;
+        if(user.fullNick.nick == original.nick) {
+          user.fullNick.nick = newNick.nick;
         }
       });
     });
@@ -108,7 +104,7 @@ export class ChannelsService {
   }
 
   private _removeUser(chan: Channel, user: SimplyUser) {
-    const uIdx = chan.users.findIndex(u => u.userData.fullNick.nick == user.nick);
+    const uIdx = chan.users.findIndex(u => u.fullNick.nick == user.nick);
     if(uIdx < 0) {
       console.error('User not found in channel', user, chan.users);
     } else {

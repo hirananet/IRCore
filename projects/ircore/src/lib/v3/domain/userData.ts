@@ -1,13 +1,18 @@
+import { Channel } from './channelChat';
 // global user message
 export class UserData {
   public fullNick: FullNick;
   public server: string;
-  public netOp: boolean;
+  public netOp: boolean = false;
   public realName?: string;
-  public modes: string[];
-  public ssl: boolean;
+  public modes: string[]; // user modes
+  public ssl: boolean = false;
   public registeredNick: string;
   public isAway: boolean;
+  public idle: number;
+  public lastLogin: number;
+  public account: string;
+  public chanModes: {[channelID: string]: string[]} = {};
 
   public static parseUser(nick: string): SimplyUser {
     let mode = UModes.UNDEFINED;
@@ -28,6 +33,20 @@ export class UserData {
       nick = nick.substr(1);
     }
     return new SimplyUser(nick, mode);
+  }
+
+  public updateModes(channel: Channel, modes: string[]) {
+    if(!this.chanModes[channel.name]) {
+      this.chanModes[channel.name] = [];
+    }
+    this.chanModes[channel.name] = this.chanModes[channel.name].concat(modes.filter((item) => this.chanModes[channel.name].indexOf(item) < 0));
+  }
+
+  public removeMode(channel: Channel, mode: string) {
+    if(!this.chanModes[channel.name]) {
+      this.chanModes[channel.name] = [];
+    }
+    this.chanModes[channel.name] = this.chanModes[channel.name].filter(_mode => _mode != mode);
   }
 }
 

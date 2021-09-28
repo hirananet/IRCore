@@ -1,3 +1,4 @@
+import { GlobUserService } from './../services/glob-user.service';
 import { PrivsService } from './../services/privs.service';
 import { ModeParser } from './ModeParser';
 import { MessageData } from './custom.websocket';
@@ -14,6 +15,7 @@ export class IRCParserV3 {
   private static chanSrv: ChannelsService;
   private static noticeSrv: NoticesService;
   private static privSrv: PrivsService;
+  private static globUsrSrv: GlobUserService;
   private static currentNick: {[key: string]: string} = {};
 
   private static listeners: {[code: string]: ((raw: RawMessage) => void)[]} = {}
@@ -80,6 +82,10 @@ export class IRCParserV3 {
 
   public static setPrivSrv(privSrv: PrivsService) {
     this.privSrv = privSrv;
+  }
+
+  public static setGlobUserSrv(globUsr: GlobUserService) {
+    this.globUsrSrv = globUsr;
   }
 
   public static setNick(newNick: string, serverId: string) {
@@ -501,45 +507,53 @@ export class IRCParserV3 {
   }
 
   private static onPartialUserData(data: RawMessage) {
-    // connected-from 378
-    // connecting from
-    // :avalon.hira.io 378 Tulkalex Tulkalex :is connecting from ~Tulkalandi@167.99.172.78 167.99.172.78
-    // WhoIsHandler.addWhoisPartial(raw.partials[3], 'connectedFrom', raw.body.replace('is connecting from ', ''));
-
-    // registered 307
-    // nick registered
-    // WhoIsHandler.addWhoisPartial(raw.partials[3], 'registered', raw.body);
-
-    // real-name 311
-    // :hiperion.hirana.net 311 Zerpiente Zerpiente Zerpiente Hirana-8kh.svf.168.181.IP * :IRCoreV2
-    // WhoIsHandler.addWhoisPartial(raw.partials[3], 'realn', raw.body);
-
-    // server 312
-    // server desde donde está conectado
-    // :avalon.hira.io 312 Tulkalex Tulkalex avalon.hira.io :Avalon - Frankfurt, Germany
-    // WhoIsHandler.addWhoisPartial(raw.partials[3], 'server', raw.body);
-
-    // is-gop 313
-    // :avalon.hira.io 313 Tulkalex Tulkalex :is a GlobalOp on Hira
-    // WhoIsHandler.addWhoisPartial(raw.partials[3], 'isGOP', true);
-
-    // modes 379
-    // :avalon.hira.io 379 Tulkalex Tulkalex :is using modes +Iiow
-    // const modes = raw.body.split(' ');
-    // WhoIsHandler.addWhoisPartial(raw.partials[3], 'modes', modes[modes.length - 1]);
-
-    // user-account 320
-    // :avalon.hira.io 330 Tulkalex Tulkalex alexander1712 :is logged in as
-    // WhoIsHandler.addWhoisPartial(raw.partials[3], 'userAccount', raw.partials[4]);
-
-    // is-secured 371
-    // :avalon.hira.io 671 Tulkalex Tulkalex :is using a secure connection
-    // WhoIsHandler.addWhoisPartial(raw.partials[3], 'isSecured', true);
-
-    // idle-llogin 317
-    // :avalon.hira.io 317 Tulkalex Tulkalex 6318 1602266231 :seconds idle, signon time
-    // WhoIsHandler.addWhoisPartial(raw.partials[3], 'idle', raw.partials[4]);
-    // WhoIsHandler.addWhoisPartial(raw.partials[3], 'lastLogin', raw.partials[5]);
+    const user = UserData.parseUser(data.partials[3]);
+    const functions = {
+      '378': (data: RawMessage) => {
+        // :avalon.hira.io 378 Tulkalex Tulkalex :is connecting from ~Tulkalandi@167.99.172.78 167.99.172.78
+        this.globUsrSrv.getUser(data.serverID, user).fullNick.origin = data.content.replace('is connecting from ', '');
+      },
+      '307': (data: RawMessage) => {
+        // nick registered
+        this.globUsrSrv.getUser(data.serverID, user).registeredNick = data.content;
+      },
+      '311': (data: RawMessage) => {
+        // :hiperion.hirana.net 311 Zerpiente Zerpiente Zerpiente Hirana-8kh.svf.168.181.IP * :IRCoreV2
+        this.globUsrSrv.getUser(data.serverID, user).realName = data.content;
+      },
+      '312': (data: RawMessage) => {
+        // :avalon.hira.io 312 Tulkalex Tulkalex avalon.hira.io :Avalon - Frankfurt, Germany
+        this.globUsrSrv.getUser(data.serverID, user).server = data.content;
+      },
+      '313': (data: RawMessage) => {
+        // :avalon.hira.io 313 Tulkalex Tulkalex :is a GlobalOp on Hira
+        this.globUsrSrv.getUser(data.serverID, user).netOp = true;
+      },
+      '317': (data: RawMessage) => {
+        // :avalon.hira.io 317 Tulkalex Tulkalex 6318 1602266231 :seconds idle, signon time
+        this.globUsrSrv.getUser(data.serverID, user).idle = parseInt(data.partials[4]);
+        this.globUsrSrv.getUser(data.serverID, user).lastLogin = parseInt(data.partials[5]);
+      },
+      '379': (data: RawMessage) => {
+        // :avalon.hira.io 379 Tulkalex Tulkalex :is using modes +Iiow
+        let strModes = data.content.split(' ');
+        const userModes = strModes[strModes.length - 1].substr(1);
+        this.globUsrSrv.getUser(data.serverID, user).modes = Array.from(userModes);
+      },
+      '320': (data: RawMessage) => {
+        // :avalon.hira.io 330 Tulkalex Tulkalex alexander1712 :is logged in as
+        this.globUsrSrv.getUser(data.serverID, user).account = data.partials[4];
+      },
+      '371': (data: RawMessage) => {
+        // :avalon.hira.io 671 Tulkalex Tulkalex :is using a secure connection
+        this.globUsrSrv.getUser(data.serverID, user).ssl = true;
+      }
+    }
+    if(functions[data.code]) {
+      return functions[data.code](data);
+    }
+    console.error('Invalid code partial: ' + data.code);
+    return;
   }
 
   private static onUknownMessage(raw: RawMessage) {

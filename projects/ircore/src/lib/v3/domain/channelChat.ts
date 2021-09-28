@@ -1,11 +1,10 @@
 import { UserData } from './userData';
 import { Message } from './message';
-import { ChannelUserData } from './channelUserData';
 
 export class Channel {
   public name: string;
   public hashedName: string;
-  public users: ChannelUserData[] = [];
+  public users: UserData[] = [];
   public topic: string;
   public channelModes: string[] = [];
   public messages: Message[] = [];
@@ -15,16 +14,12 @@ export class Channel {
     this.hashedName = '#' + this.name;
   }
 
-  public addUserToChannel(user: UserData, modes: string[]) {
-    const oldUser = this.users.find(_user => _user.userData.fullNick == user.fullNick);
-    if(oldUser) {
-      oldUser.userData = user;
-      oldUser.channelModes = modes;
+  public addUserToChannel(user: UserData) {
+    const index = this.users.findIndex(_user => _user.fullNick == user.fullNick);
+    if(index >= 0) {
+      this.users[index] = user;
     } else {
-      const cud = new ChannelUserData();
-      cud.userData = user;
-      cud.channelModes = modes;
-      this.users.push(cud);
+      this.users.push(user);
     }
   }
 }
