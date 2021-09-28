@@ -3,24 +3,24 @@
  */
 
 /** core **/
-export * from './lib/v3/core/custom.websocket'
-export * from './lib/v3/core/IRCParserV3'
-export * from './lib/v3/core/ModeParser'
-export * from './lib/v3/core/server.data'
+export * from './lib/core/custom.websocket'
+export * from './lib/core/IRCParserV3'
+export * from './lib/core/ModeParser'
+export * from './lib/core/server.data'
 
 /** DOMAINS */
-export * from './lib/v3/domain/channelChat'
-export * from './lib/v3/domain/message'
-export * from './lib/v3/domain/privChat'
-export * from './lib/v3/domain/rawMessage'
-export * from './lib/v3/domain/userData'
+export * from './lib/domain/channelChat'
+export * from './lib/domain/message'
+export * from './lib/domain/privChat'
+export * from './lib/domain/rawMessage'
+export * from './lib/domain/userData'
 
 /** SERVICES **/
-export * from './lib/v3/services/channels.service'
-export * from './lib/v3/services/glob-user.service'
-export * from './lib/v3/services/notices.service'
-export * from './lib/v3/services/privs.service'
-export * from './lib/v3/services/server.service'
+export * from './lib/services/channels.service'
+export * from './lib/services/glob-user.service'
+export * from './lib/services/notices.service'
+export * from './lib/services/privs.service'
+export * from './lib/services/server.service'
 
 /** UTILS */
 export * from './lib/utils/EmoteList';

@@ -1,9 +1,12 @@
 {
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "cli": {
+    "analytics": "d13526c3-b3f6-4389-8e1c-3d87e681e4f9"
+  },
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "IRCore": {
+    "ircore": {
       "projectType": "library",
       "root": "projects/ircore",
       "sourceRoot": "projects/ircore/src",
@@ -12,14 +15,17 @@
         "build": {
           "builder": "@angular-devkit/build-angular:ng-packagr",
           "options": {
-            "tsConfig": "projects/ircore/tsconfig.lib.json",
             "project": "projects/ircore/ng-package.json"
           },
           "configurations": {
             "production": {
               "tsConfig": "projects/ircore/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/ircore/tsconfig.lib.json"
             }
-          }
+          },
+          "defaultConfiguration": "production"
         },
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
@@ -28,23 +34,9 @@
             "tsConfig": "projects/ircore/tsconfig.spec.json",
             "karmaConfig": "projects/ircore/karma.conf.js"
           }
-        },
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "tsConfig": [
-              "projects/ircore/tsconfig.lib.json",
-              "projects/ircore/tsconfig.spec.json"
-            ],
-            "exclude": [
-              "**/node_modules/**"
-            ]
-          }
         }
       }
-    }},
-  "cli": {
-    "analytics": "f462b9f4-1f48-45be-839a-877b9b0debaa"
+    }
   },
-  "defaultProject": "IRCore"
+  "defaultProject": "ircore"
 }
