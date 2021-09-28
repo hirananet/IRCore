@@ -459,7 +459,7 @@ export class IRCParserV3 {
   }
 
   private static onPart(data: RawMessage) {
-    const channel = new Channel(data.partials[2]);
+    const channel = new Channel(data.partials[2] ? data.partials[2] : data.content);
     const partMessage = data.content;
     const userParted = UserData.parseUser(data.getOrigin().simplyOrigin);
     if(userParted.nick == this.currentNick[data.serverID]) {

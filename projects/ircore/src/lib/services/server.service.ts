@@ -54,7 +54,7 @@ export class ServerService {
         console.error('Received error from stream: ', message.message);
         return;
       }
-      console.log('RAW: ' + message);
+      console.log('RAW: ', message);
       IRCParserV3.process(message);
     });
   }
