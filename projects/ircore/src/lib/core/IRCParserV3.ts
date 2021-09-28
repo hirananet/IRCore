@@ -1,3 +1,4 @@
+import { RawMessage } from './../domain/rawMessage';
 import { GlobUserService } from './../services/glob-user.service';
 import { PrivsService } from './../services/privs.service';
 import { ModeParser } from './ModeParser';
@@ -61,6 +62,7 @@ export class IRCParserV3 {
     this.addListener('353', (c) => this.onCommandNamesResponse(c));
     this.addListener('366', (c) => this.onCommandNamesFinish(c));
     this.addListener('375', (c) => this.onMotd(c));
+    this.addListener('376', (c) => this.onMotdEnd(c));
     this.addListener('378', (c) => this.onPartialUserData(c));
     this.addListener('379', (c) => this.onPartialUserData(c));
     this.addListener('401', (c) => this.onNonExistantNick(c));
@@ -170,6 +172,13 @@ export class IRCParserV3 {
         originalNick,
         newNick
       }
+    });
+  }
+
+  private static onMotdEnd(raw: RawMessage) {
+    this.noticeSrv.notifications.emit({
+      raw,
+      type: 'endMotd'
     });
   }
 
@@ -513,10 +522,6 @@ export class IRCParserV3 {
   private static onPartialUserData(data: RawMessage) {
     const user = UserData.parseUser(data.partials[3]);
     const functions: {[code: string]: (data: RawMessage) => void} = {
-      '378': (data: RawMessage) => {
-        // :avalon.hira.io 378 Tulkalex Tulkalex :is connecting from ~Tulkalandi@167.99.172.78 167.99.172.78
-        this.globUsrSrv.getUser(data.serverID, user).fullNick.origin = data.content.replace('is connecting from ', '');
-      },
       '307': (data: RawMessage) => {
         // nick registered
         this.globUsrSrv.getUser(data.serverID, user).registeredNick = data.content;
@@ -537,6 +542,10 @@ export class IRCParserV3 {
         // :avalon.hira.io 317 Tulkalex Tulkalex 6318 1602266231 :seconds idle, signon time
         this.globUsrSrv.getUser(data.serverID, user).idle = parseInt(data.partials[4]);
         this.globUsrSrv.getUser(data.serverID, user).lastLogin = parseInt(data.partials[5]);
+      },
+      '378': (data: RawMessage) => {
+        // :avalon.hira.io 378 Tulkalex Tulkalex :is connecting from ~Tulkalandi@167.99.172.78 167.99.172.78
+        this.globUsrSrv.getUser(data.serverID, user).fullNick.origin = data.content.replace('is connecting from ', '');
       },
       '379': (data: RawMessage) => {
         // :avalon.hira.io 379 Tulkalex Tulkalex :is using modes +Iiow
