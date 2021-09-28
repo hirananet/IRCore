@@ -1,24 +1,54 @@
-# Ircore
+# IRCore
 
-This library was generated with [Angular CLI](https://github.com/angular/angular-cli) version 12.0.5.
+Angular IRC Core services.
 
-## Code scaffolding
+This library is an IRC client for Angular/typescript, uses websocket or kiwiircgateway for connections.
+Most of the events are handled in two ways, one is using Observer pattern via static handlers classes, and another is using angular services.
 
-Run `ng generate component component-name --project ircore` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module --project ircore`.
-> Note: Don't forget to add `--project ircore` or else it will be added to the default project in your `angular.json` file. 
+This library works fine with Inspircd and Anope (not tested this version in atheme).
 
-## Build
+# Services
 
-Run `ng build ircore` to build the project. The build artifacts will be stored in the `dist/` directory.
+# Event Handling
 
-## Publishing
+### this.notices.notifications
 
-After building your library with `ng build ircore`, go to the dist folder `cd dist/ircore` and run `npm publish`.
+types:
+* motd: message of te day received.
+* require-pass: 464 (usually for znc logins).
+* notice: global notice message recived.
+* uknown: no listener for this message code.
+* pong: pong command received.
+* nick-in-use: this nick is in use
 
-## Running unit tests
+### this.channels.notifications
 
-Run `ng test ircore` to execute the unit tests via [Karma](https://karma-runner.github.io).
+types:
+* message: new message in channel
+* user-mode: User mode changed in channel
+* chan-mode: channel mode changed
+* nick-changed: all-channels user change nick
+* topic: topic changed
+* channels: list of channels of me updated
+* names: response to command names. (users in channel)
+* kick: user kicked from channel
+* new-channel: me joined to new channel
+* join: user joined to channel
+* close-channel: me parted from channel
+* leave: user leaved channel
+* banned: from channel
+* channel-moderated: channel is in moderated mode.
+* notice: external notice in channel.
 
-## Further help
+### this.privs.notifications
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+types:
+* message: private message
+* non-existant: message to non existant nick or channel
+* sside-ignored: server side ignore.
+* away: away message
+* gmode: is messaging you, and you have user mode +g set.
+
+# IRCParser V3
+
+## Extensions
