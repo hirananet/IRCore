@@ -79,7 +79,11 @@ export class ChannelsService {
   }
 
   public getChannel(serverID: string, channel: Channel) {
-    return this.channelsOpened[serverID].find(chan => chan.name == channel.name);
+    const chann = this.channelsOpened[serverID].find(chan => chan.name == channel.name);
+    if(!chann) {
+      console.error('Error getting channel: ', channel, this.channelsOpened[serverID])
+    }
+    return chann;
   }
 
   public removeUser(serverID: string, channel: Channel, user: SimplyUser) {
