@@ -24,6 +24,5 @@ export * from './lib/v3/services/server.service'
 
 /** UTILS */
 export * from './lib/utils/EmoteList';
-export * from './lib/utils/PostProcessor';
 export * from './lib/utils/Time.util';
 

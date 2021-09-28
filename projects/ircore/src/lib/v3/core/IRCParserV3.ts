@@ -10,6 +10,7 @@ import { ServerService } from '../services/server.service';
 import { ChannelsService } from '../services/channels.service';
 import { NoticesService } from '../services/notices.service';
 
+// @dynamic
 export class IRCParserV3 {
 
   private static chanSrv: ChannelsService;
