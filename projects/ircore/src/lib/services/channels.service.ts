@@ -67,10 +67,10 @@ export class ChannelsService {
   public setTopic(serverID: string, channel: Channel, topic: string) {
     const obj = this.channelsOpened[serverID];
     if(!obj) {
-      console.error('Error setting topic in non existant channel');
+      console.error('Error setting topic in non existant server');
       return;
     }
-    const channObj = obj.find(chan => chan.name = channel.name);
+    const channObj = obj.find(chan => chan.name == channel.name);
     if(!channObj) {
       console.error('Error setting topic in non existant channel');
       return;
