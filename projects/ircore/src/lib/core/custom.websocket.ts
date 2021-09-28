@@ -71,8 +71,8 @@ export class CustomWebSocket {
 }
 
 export class ConnectionStatusData<t> {
-  status: ConnectionStatus;
-  data: t;
+  public status: ConnectionStatus;
+  public data: t;
 }
 
 export enum ConnectionStatus {

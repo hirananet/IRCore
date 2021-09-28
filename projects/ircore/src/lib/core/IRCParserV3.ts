@@ -133,7 +133,7 @@ export class IRCParserV3 {
         user: UserData.parseUser(mode[3]),
         channel: new Channel(raw.partials[2]),
         add: mode[1] === '+',
-        mode: mode[2]
+        mode: mode[2] ? mode[2] : ''
       };
       this.chanSrv.updateUserModeInChannel(raw.serverID, modeParsed);
       this.chanSrv.notifications.emit({
@@ -144,7 +144,7 @@ export class IRCParserV3 {
     } else {
       const modeParsed = {
         channel: new Channel(raw.partials[2]),
-        mode: mode[2]
+        mode: mode[2] ? mode[2] : ''
       };
       this.chanSrv.updateChannelMode(raw.serverID, modeParsed);
       this.chanSrv.notifications.emit({
@@ -283,7 +283,7 @@ export class IRCParserV3 {
     const serverData = ServerService.getServerData(raw.serverID);
     if(this.currentNick[raw.serverID].toLowerCase() == serverData.user.nick.toLowerCase()) {
       // change nick to alt nick
-      serverData.websocket.send(`NICK ${serverData.user.altNick}`)
+      serverData.websocket?.send(`NICK ${serverData.user.altNick}`)
       this.setNick(serverData.user.altNick, raw.serverID);
     } else if(this.currentNick[raw.serverID].toLowerCase() == serverData.user.altNick.toLowerCase()) {
       // TODO: change to random
@@ -396,6 +396,10 @@ export class IRCParserV3 {
     const channel = new Channel(data.partials[2]);
     const operator = data.content;
     const kickData = /#([^\s]+)\s([^:]+)\s/.exec(data.raw);
+    if(!kickData) {
+      console.error('Error parsing kick data', data.raw);
+      return;
+    }
     const user = UserData.parseUser(kickData[2])
     this.chanSrv.removeUser(data.serverID, channel, user);
     // TODO: message kick
@@ -508,7 +512,7 @@ export class IRCParserV3 {
 
   private static onPartialUserData(data: RawMessage) {
     const user = UserData.parseUser(data.partials[3]);
-    const functions = {
+    const functions: {[code: string]: (data: RawMessage) => void} = {
       '378': (data: RawMessage) => {
         // :avalon.hira.io 378 Tulkalex Tulkalex :is connecting from ~Tulkalandi@167.99.172.78 167.99.172.78
         this.globUsrSrv.getUser(data.serverID, user).fullNick.origin = data.content.replace('is connecting from ', '');

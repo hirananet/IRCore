@@ -31,7 +31,7 @@ export class ChannelsService {
       modes.push(user.mode);
     }
     userData.updateModes(channel, modes);
-    this.getChannel(serverID, channel).addUserToChannel(userData);
+    this.getChannel(serverID, channel)?.addUserToChannel(userData);
   }
 
   public removeChannel(serverID: string, channel: Channel) {
@@ -62,7 +62,17 @@ export class ChannelsService {
   }
 
   public setTopic(serverID: string, channel: Channel, topic: string) {
-    this.channelsOpened[serverID].find(chan => chan.name = channel.name).topic = topic;
+    const obj = this.channelsOpened[serverID];
+    if(!obj) {
+      console.error('Error setting topic in non existant channel');
+      return;
+    }
+    const channObj = obj.find(chan => chan.name = channel.name);
+    if(!channObj) {
+      console.error('Error setting topic in non existant channel');
+      return;
+    }
+    channObj.topic = topic;
   }
 
   public getChannel(serverID: string, channel: Channel) {

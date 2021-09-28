@@ -21,6 +21,10 @@ export class RawMessage {
       });
     }
     const r = /:([^:]+):?(.*)/.exec(msg);
+    if(!r) {
+      console.error('cant parse info', msg);
+      return;
+    }
     this.info = r[1];
     this.content = r[2];
     this.partials = this.info.split(' ');
@@ -31,6 +35,10 @@ export class RawMessage {
     if(!this.origin) {
       const userOrigin = /([^!]*!)?([^@]+@)?(.*)/.exec(this.partials[0]);
       const od = new OriginData();
+      if(!userOrigin) {
+        console.error('Error parsing user origin', this.partials[0]);
+        return od;
+      }
       if (!userOrigin[2]) {
           od.server = userOrigin[1];
           od.simplyOrigin = od.server;

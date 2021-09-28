@@ -5,6 +5,10 @@ export class ModeParser {
     if(modeRaw.indexOf('#') == -1) {
       const modeCut = modeRaw.split(':');
       const regex = /(\\+|\-)?([a-zA-Z]+)/.exec(modeCut[1]);
+      if(!regex) {
+        console.error('cant parse modes');
+        return [];
+      }
       return [
         undefined,
         regex[1], // + o -

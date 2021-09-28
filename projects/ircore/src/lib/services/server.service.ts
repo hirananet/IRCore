@@ -29,12 +29,12 @@ export class ServerService {
     const proto = server.withSSL ? 'wss' : 'ws';
     const subsc = server.websocket.onStatusChanged().subscribe((status: ConnectionStatusData<any>) => {
       if(status.status === ConnectionStatus.CONNECTED) {
-        server.websocket.send('ENCODING UTF-8');
+        server.websocket?.send('ENCODING UTF-8');
         if (!server.withWebSocket) {
-          server.websocket.send(`HOST ${server.ircServer}`);
+          server.websocket?.send(`HOST ${server.ircServer}`);
         }
-        server.websocket.send(`USER ${server.user.user} * * : IRCoreV${ServerService.VERSION}`);
-        server.websocket.send(`NICK ${server.user.nick}`);
+        server.websocket?.send(`USER ${server.user.user} * * : IRCoreV${ServerService.VERSION}`);
+        server.websocket?.send(`NICK ${server.user.nick}`);
         IRCParserV3.setNick(server.user.nick, server.serverID);
         subsc.unsubscribe();
       }
@@ -85,7 +85,7 @@ export class ServerService {
   }
 
   public disconnect(serverID: string): void {
-    this.getServerById(serverID).websocket.disconnect();
+    this.getServerById(serverID).websocket?.disconnect();
   }
 
   public getServerById(id: string) {
@@ -93,11 +93,12 @@ export class ServerService {
   }
 
   public getServerByIrcServer(ircServer: string) {
-    return ServerService.servers[Object.keys(ServerService.servers).find(key => ServerService.servers[key].ircServer === ircServer)];
+    const server = Object.keys(ServerService.servers).find(key => ServerService.servers[key].ircServer === ircServer);
+    return server ? ServerService.servers[server] : undefined;
   }
 
   public sendToServer(serverID: string, raw: string) {
-    this.getServerById(serverID).websocket.send(raw);
+    this.getServerById(serverID).websocket?.send(raw);
   }
 
   public sendTo(serverID: string, chanOrNick: string, message: string) {

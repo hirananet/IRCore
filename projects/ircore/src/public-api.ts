@@ -23,6 +23,5 @@ export * from './lib/services/privs.service'
 export * from './lib/services/server.service'
 
 /** UTILS */
-export * from './lib/utils/EmoteList';
 export * from './lib/utils/Time.util';
 
