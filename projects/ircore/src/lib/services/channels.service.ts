@@ -40,9 +40,9 @@ export class ChannelsService {
   public removeChannel(serverID: string, channel: Channel) {
     const idx = this.channelsOpened[serverID].findIndex(chan => chan.name == channel.name );
     if(idx >= 0) {
-      delete this.channelsOpened[serverID][idx];
+      this.channelsOpened[serverID].splice(idx, 1);
     } else {
-      console.error('Channel not found?', channel, this.channelsOpened[serverID]);
+      console.error('Channel not found #1?', channel, this.channelsOpened[serverID]);
     }
   }
 
@@ -85,7 +85,7 @@ export class ChannelsService {
   public removeUser(serverID: string, channel: Channel, user: SimplyUser) {
     const chan = this.channelsOpened[serverID].find(chan => chan.name == channel.name);
     if(!chan) {
-      console.error('Channel not found?', channel, this.channelsOpened[serverID]);
+      console.error('Channel not found #2?', channel, this.channelsOpened[serverID]);
       return;
     }
     this._removeUser(chan, user);
@@ -110,7 +110,7 @@ export class ChannelsService {
   public addMessageToChannel(serverID: string, channel: Channel, message: Message) {
     const chan = this.channelsOpened[serverID].find(chan => chan.name == channel.name);
     if(!chan) {
-      console.error('Channel not found?', channel, this.channelsOpened[serverID]);
+      console.error('Channel not found #3?', channel, this.channelsOpened[serverID]);
       return;
     }
     chan.messages.push(message);
@@ -121,7 +121,7 @@ export class ChannelsService {
     if(uIdx < 0) {
       console.error('User not found in channel', user, chan.users);
     } else {
-      delete chan.users[uIdx];
+      chan.users.splice(uIdx, 1);
     }
   }
 
