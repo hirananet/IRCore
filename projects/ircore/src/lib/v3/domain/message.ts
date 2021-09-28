@@ -1,4 +1,4 @@
-import { Channel } from './../../dto/Channel';
+import { Channel } from './channelChat';
 import { Time } from './../../utils/Time.util';
 import { UserData } from './userData';
 import { RawMessage } from './rawMessage';
