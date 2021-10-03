@@ -40,6 +40,16 @@ export class PrivsService {
   }
 
   public getChat(serverID: string, chatName: string) {
-    return this.privsOpened[serverID].find(chat => chat.name == chatName);
+    if(!this.privsOpened[serverID]) {
+      this.privsOpened[serverID] = [];
+    }
+    let privChat = this.privsOpened[serverID].find(chat => chat.name == chatName);
+    if(!privChat) {
+      privChat = new PrivChat();
+      privChat.name = chatName;
+      privChat.target = this.gUser.getUser(serverID, UserData.parseUser(chatName));
+      this.privsOpened[serverID].push(privChat);
+    }
+    return privChat;
   }
 }
