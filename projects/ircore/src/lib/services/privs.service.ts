@@ -12,7 +12,7 @@ import { UserData } from '../domain/userData';
 export class PrivsService {
 
   private privsOpened: {[serverID: string]: PrivChat[]} = {};
-  public readonly notifications: EventEmitter<{raw: RawMessage, type: string, parsedObject?: any}> = new EventEmitter<{raw: RawMessage, type: string, parsedObject?: any}>();
+  public readonly notifications: EventEmitter<{raw?: RawMessage, type: string, parsedObject?: any}> = new EventEmitter<{raw?: RawMessage, type: string, parsedObject?: any}>();
 
   constructor(private readonly gUser: GlobUserService) { }
 
@@ -27,8 +27,19 @@ export class PrivsService {
       privChat.target = this.gUser.getUser(serverID, UserData.parseUser(author));
       privChat.messages.push(msg);
       this.privsOpened[serverID].push(privChat);
+      this.notifications.emit({
+        parsedObject: {
+          chatName,
+          serverID
+        },
+        type: 'new-priv'
+      });
     } else {
       chatObj.messages.push(msg);
     }
+  }
+
+  public getChat(serverID: string, chatName: string) {
+    return this.privsOpened[serverID].find(chat => chat.name == chatName);
   }
 }
