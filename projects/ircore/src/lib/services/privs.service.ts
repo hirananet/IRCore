@@ -21,12 +21,19 @@ export class PrivsService {
       this.privsOpened[serverID] = [];
     }
     const chatObj = this.privsOpened[serverID].find(chat => chat.name == chatName);
+    let newChat = false;
     if(!chatObj) {
       const privChat = new PrivChat();
       privChat.name = chatName;
       privChat.target = this.gUser.getUser(serverID, UserData.parseUser(author));
       privChat.messages.push(msg);
       this.privsOpened[serverID].push(privChat);
+      newChat = true;
+    } else {
+      newChat = chatObj.messages.length == 0;
+      chatObj.messages.push(msg);
+    }
+    if(newChat) {
       this.notifications.emit({
         parsedObject: {
           chatName,
@@ -34,8 +41,6 @@ export class PrivsService {
         },
         type: 'new-priv'
       });
-    } else {
-      chatObj.messages.push(msg);
     }
   }
 
