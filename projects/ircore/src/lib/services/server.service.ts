@@ -141,6 +141,10 @@ export class ServerService {
     this.sendToServer(serverID, `PRIVMSG ${chanOrNick} :${message}`);
   }
 
+  public getCurrentNick(serverID: string) {
+    return IRCParserV3.getCurrentNick(serverID);
+  }
+
   public static getServerData(id: string) {
     return ServerService.servers[id];
   }
