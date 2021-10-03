@@ -1,3 +1,4 @@
+import { Message } from './../domain/message';
 import { GlobUserService } from './glob-user.service';
 import { PrivsService } from './privs.service';
 import { NoticesService } from './notices.service';
@@ -15,7 +16,7 @@ export class ServerService {
   private static readonly VERSION = '3.0';
   private static servers: {[key: string]: ServerData} = {};
 
-  constructor(chanSrv: ChannelsService, noticeSrv: NoticesService, privSrv: PrivsService, globUsr: GlobUserService) {
+  constructor(chanSrv: ChannelsService, noticeSrv: NoticesService, private privSrv: PrivsService, globUsr: GlobUserService) {
     IRCParserV3.setChanSrv(chanSrv);
     IRCParserV3.setNoticeSrv(noticeSrv)
     IRCParserV3.setPrivSrv(privSrv);
@@ -106,6 +107,17 @@ export class ServerService {
 
   public sendToServer(serverID: string, raw: string) {
     this.getServerById(serverID).websocket?.send(raw);
+  }
+
+  public sendPrivMSG(serverID: string, nick: string, message: string) {
+    if(nick[0] == '#') {
+      throw 'invalid nick';
+    }
+    this.sendTo(serverID, nick, message);
+    const msg = new Message();
+    msg.author = IRCParserV3.getCurrentNick(serverID);
+    msg.content = message;
+    this.privSrv.onNewMessage(serverID, nick, msg.author, msg);
   }
 
   public sendTo(serverID: string, chanOrNick: string, message: string) {

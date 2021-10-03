@@ -21,6 +21,10 @@ export class IRCParserV3 {
 
   private static listeners: {[code: string]: ((raw: RawMessage) => void)[]} = {}
 
+  public static getCurrentNick(serverID: string) {
+    return this.currentNick[serverID];
+  }
+
   public static addListener(code: string, fn: (raw: RawMessage) => void) {
     if(!this.listeners[code]) {
       this.listeners[code] = [];
