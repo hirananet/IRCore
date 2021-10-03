@@ -17,6 +17,9 @@ export class PrivsService {
   constructor(private readonly gUser: GlobUserService) { }
 
   public onNewMessage(serverID: string, chatName: string, author: string, msg: Message) {
+    if(!this.privsOpened[serverID]) {
+      this.privsOpened[serverID] = [];
+    }
     const chatObj = this.privsOpened[serverID].find(chat => chat.name == chatName);
     if(!chatObj) {
       const privChat = new PrivChat();
