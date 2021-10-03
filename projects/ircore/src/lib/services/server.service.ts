@@ -7,6 +7,7 @@ import { IRCParserV3 } from '../core/IRCParserV3';
 import { CustomWebSocket, ConnectionStatus, ConnectionStatusData, MessageData } from '../core/custom.websocket';
 import { ServerData } from '../core/server.data';
 import { Injectable } from '@angular/core';
+import { Channel } from '../domain/channelChat';
 
 @Injectable({
   providedIn: 'root'
@@ -16,7 +17,7 @@ export class ServerService {
   private static readonly VERSION = '3.0';
   private static servers: {[key: string]: ServerData} = {};
 
-  constructor(chanSrv: ChannelsService, noticeSrv: NoticesService, private privSrv: PrivsService, globUsr: GlobUserService) {
+  constructor(private chanSrv: ChannelsService, noticeSrv: NoticesService, private privSrv: PrivsService, globUsr: GlobUserService) {
     IRCParserV3.setChanSrv(chanSrv);
     IRCParserV3.setNoticeSrv(noticeSrv)
     IRCParserV3.setPrivSrv(privSrv);
@@ -118,6 +119,17 @@ export class ServerService {
     msg.author = IRCParserV3.getCurrentNick(serverID);
     msg.content = message;
     this.privSrv.onNewMessage(serverID, nick, msg.author, msg);
+  }
+
+  public sendChannelMSG(serverID: string, channel: string, message: string) {
+    if(channel[0]!='#') {
+      throw 'invalid channel, must start with #';
+    }
+    this.sendTo(serverID, channel, message);
+    const msg = new Message();
+    msg.author = IRCParserV3.getCurrentNick(serverID);
+    msg.content = message;
+    this.chanSrv.addMessageToChannel(serverID, new Channel(channel), msg);
   }
 
   public sendTo(serverID: string, chanOrNick: string, message: string) {
