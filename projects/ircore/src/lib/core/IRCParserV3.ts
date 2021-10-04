@@ -47,6 +47,7 @@ export class IRCParserV3 {
     this.addListener('KICK', (c) => this.onKick(c));
     this.addListener('PONG', (c) => this.onPongReceived(c));
     this.addListener('QUIT', (c) => this.onQuit(c));
+    this.addListener('CAP', (c) => this.onCAPabilities(c));
     this.addListener('301', (c) => this.onAwayMessage(c));
     this.addListener('307', (c) => this.onPartialUserData(c));
     this.addListener('311', (c) => this.onPartialUserData(c));
@@ -424,6 +425,16 @@ export class IRCParserV3 {
         userKicked: user
       }
     });
+  }
+
+  private static onCAPabilities(data: RawMessage) {
+    data.content.split(' ')
+                .filter(cap => cap && cap.length > 0)
+                .forEach(cap => {
+                  this.noticeSrv.setCaps(data.serverID, cap);
+                });
+    const serverData = ServerService.getServerData(data.serverID);
+    serverData.websocket?.send('CAP END');
   }
 
   private static onQuit(data: RawMessage) {

@@ -36,6 +36,7 @@ export class ServerService {
           server.websocket?.send(`HOST ${server.ircServer}`);
         }
         server.websocket?.send(`USER ${server.user.user} * * : IRCoreV${ServerService.VERSION}`);
+        server.websocket?.send(`CAP LS 302`);
         server.websocket?.send(`NICK ${server.user.nick}`);
         IRCParserV3.setNick(server.user.nick, server.serverID);
         subsc.unsubscribe();
