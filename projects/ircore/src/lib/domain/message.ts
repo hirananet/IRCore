@@ -4,18 +4,18 @@ import { UserData } from './userData';
 import { RawMessage } from './rawMessage';
 
 export class Message {
-  public id: string;
+  public id?: string;
   public author?: string;
   public date?: string;
-  public content: string;
+  public content: string = '';
   public quoteID?: string;
-  public isMeCommand: boolean; // /me command.
-  public preloaded: boolean; // loaded from history?
-  public externalNotice?: boolean; // is an external notice to channel
+  public isMeCommand: boolean = false; // /me command.
+  public preloaded: boolean = false; // loaded from history?
+  public externalNotice: boolean = false; // is an external notice to channel
   public coloredMessage?: string; // for modes and others speacial messages.
-  public channel: string;
-  public tags: {[key:string]: string};
-  public haveMention: boolean;
+  public channel?: string;
+  public tags?: {[key:string]: string};
+  public haveMention: boolean = false;
 
   public static parseMessage(raw: RawMessage, currentNick: string) {
     const message = new Message();

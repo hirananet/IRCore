@@ -1,17 +1,17 @@
 import { Channel } from './channelChat';
 // global user message
 export class UserData {
-  public fullNick: FullNick;
-  public server: string;
+  public fullNick: FullNick = new FullNick();
+  public server?: string;
   public netOp: boolean = false;
   public realName?: string;
-  public modes: string[]; // user modes
+  public modes?: string[]; // user modes
   public ssl: boolean = false;
-  public registeredNick: string;
-  public isAway: boolean;
-  public idle: number;
-  public lastLogin: number;
-  public account: string;
+  public registeredNick?: string;
+  public isAway: boolean = false;
+  public idle?: number;
+  public lastLogin?: number;
+  public account?: string;
   public chanModes: {[channelID: string]: string[]} = {};
 
   public static parseUser(nick: string): SimplyUser {
@@ -51,8 +51,8 @@ export class UserData {
 }
 
 export class FullNick {
-  public nick: string;
-  public origin: string;
+  public nick?: string;
+  public origin?: string;
 }
 
 export enum UModes {

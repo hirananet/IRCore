@@ -2,18 +2,18 @@ import { CustomWebSocket } from './custom.websocket';
 
 export class ServerData {
 
-  public serverID: string;
+  public serverID: string = '';
 
-  public ircServer: string;
-  public ircPort: number;
+  public ircServer: string = '';
+  public ircPort: number = 443;
 
   // using websocket //
-  public withWebSocket: boolean;
-  public withSSL: boolean;
+  public withWebSocket: boolean = true;
+  public withSSL: boolean = true;
 
   // Gateway Server //
-  public gatewayServer: string;
-  public gatewayPort: number;
+  public gatewayServer: string = '';
+  public gatewayPort: number = 80;
   ////////////////////
 
 
@@ -25,8 +25,8 @@ export class ServerData {
 }
 
 export class User {
-  public nick: string;
-  public altNick: string;
-  public user: string;
-  public password: string;
+  public nick: string = '';
+  public altNick: string = '';
+  public user: string = '';
+  public password: string = '';
 }

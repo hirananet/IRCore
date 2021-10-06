@@ -5,7 +5,7 @@ export class Channel {
   public name: string;
   public hashedName: string;
   public users: UserData[] = [];
-  public topic: string;
+  public topic?: string;
   public channelModes: string[] = [];
   public messages: Message[] = [];
 

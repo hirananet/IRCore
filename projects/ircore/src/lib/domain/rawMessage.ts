@@ -1,13 +1,13 @@
 export class RawMessage {
 
-  public content: string;
-  public info: string;
-  public code: string;
-  public partials: string[];
+  public content: string = '';
+  public info?: string;
+  public code: string = '00';
+  public partials: string[] = [];
   public tags: {[key: string]: string} = {};
   public raw: string;
   public serverID: string;
-  private origin: OriginData;
+  private origin?: OriginData;
 
   public constructor(msg: string, serverID: string) {
     this.raw = msg;
@@ -59,8 +59,8 @@ export class RawMessage {
 }
 
 export class OriginData {
-  public server: string;
-  public identity: string;
-  public nick: string;
-  public simplyOrigin: string;
+  public server?: string;
+  public identity?: string;
+  public nick?: string;
+  public simplyOrigin: string = '';
 }
