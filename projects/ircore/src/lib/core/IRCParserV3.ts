@@ -1,3 +1,4 @@
+import { ListService, ChannelListData } from './../services/list.service';
 import { GlobUserService } from './../services/glob-user.service';
 import { PrivsService } from './../services/privs.service';
 import { ModeParser } from './ModeParser';
@@ -17,6 +18,7 @@ export class IRCParserV3 {
   private static noticeSrv: NoticesService;
   private static privSrv: PrivsService;
   private static globUsrSrv: GlobUserService;
+  private static listSrv: ListService;
   private static currentNick: {[key: string]: string} = {};
 
   private static listeners: {[code: string]: ((raw: RawMessage) => void)[]} = {}
@@ -97,6 +99,10 @@ export class IRCParserV3 {
 
   public static setNick(newNick: string, serverId: string) {
     this.currentNick[serverId] = newNick;
+  }
+
+  public static setListService(listSrv: ListService) {
+    this.listSrv = listSrv;
   }
 
   public static process(socketMessage: MessageData) {
@@ -347,17 +353,23 @@ export class IRCParserV3 {
   }
 
   private static onStartCommandList(raw: RawMessage) {
-    // Start command /LIST
+    this.listSrv.startList(raw.serverID);
   }
 
   private static onCommandListNewChannel(raw: RawMessage) {
-    // const body = raw.body.split(']');
-    // channel of /LIST
-    // ListHandler.addChannels(new ChannelInfo(raw.partials[3].slice(1), body[1], body[0].replace('[' , ''), parseInt(raw.partials[4])));
+    const body = raw.content.split(']');
+    const chanData = new ChannelListData();
+    const chnl = new Channel(raw.partials[3]);
+    chanData.channelName = chnl.name;
+    chanData.channelHash = chnl.hashedName;
+    chanData.description = body[1];
+    chanData.modes = body[0].replace('[', '');
+    chanData.members = parseInt(raw.partials[4]);
+    this.listSrv.addChannel(raw.serverID, chanData);
   }
 
   private static onFinishCommandlList(raw: RawMessage) {
-    // end command /LIST
+    this.listSrv.endList(raw.serverID);
   }
 
   private static onCommandNamesResponse(raw: RawMessage) {
