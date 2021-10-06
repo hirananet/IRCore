@@ -102,7 +102,7 @@ export class ChannelsService {
   }
 
   public nickChangeInAllChannels(serverID: string, original: SimplyUser, newNick: SimplyUser) {
-    this.channelsOpened[serverID].forEach(chan => {
+    this.channelsOpened[serverID]?.forEach(chan => {
       chan.users.forEach(user => {
         if(user.fullNick.nick == original.nick) {
           user.fullNick.nick = newNick.nick;

@@ -57,4 +57,11 @@ export class PrivsService {
     }
     return privChat;
   }
+
+  public removePriv(serverID: string, chatName: string) {
+    const chatIndex = this.privsOpened[serverID]?.findIndex(chat => chat.name == chatName);
+    if(chatIndex >= 0) {
+      this.privsOpened[serverID].splice(chatIndex, 1);
+    }
+  }
 }
