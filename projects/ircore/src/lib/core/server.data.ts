@@ -29,4 +29,5 @@ export class User {
   public altNick: string = '';
   public user: string = '';
   public password: string = '';
+  public identify: boolean = false;
 }
