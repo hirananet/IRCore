@@ -21,6 +21,7 @@ export * from './lib/services/glob-user.service'
 export * from './lib/services/notices.service'
 export * from './lib/services/privs.service'
 export * from './lib/services/server.service'
+export * from './lib/services/list.service'
 
 /** UTILS */
 export * from './lib/utils/Time.util';

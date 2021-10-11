@@ -102,6 +102,10 @@ export class ServerService {
     return ServerService.servers[id];
   }
 
+  public requestChannelList(serverID: string) {
+    this.sendToServer(serverID, 'LIST');
+  }
+
   public getServerByIrcServer(ircServer: string) {
     const server = Object.keys(ServerService.servers).find(key => ServerService.servers[key].ircServer === ircServer);
     return server ? ServerService.servers[server] : undefined;

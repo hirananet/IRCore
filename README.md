@@ -7,7 +7,7 @@ https://angular.io/guide/creating-libraries
 
 ## build: 
 
-ng build IRCore --prod
+ng build ircore --prod
 
 ## publish: 
 
@@ -20,4 +20,6 @@ https://github.com/hirananet/IRCore/blob/main/projects/ircore/README.md
 
 ## Example of use:
 
-https://github.com/hirananet/HiraClient/tree/main/web-client
+Ionic mobile client:
+
+https://github.com/hirananet/Hirana/tree/main/HiranaMobile
