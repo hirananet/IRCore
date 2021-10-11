@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, EventEmitter } from '@angular/core';
 
 @Injectable({
   providedIn: 'root'
@@ -6,6 +6,7 @@ import { Injectable } from '@angular/core';
 export class ListService {
 
   public channelList: {[serverID: string]: ChannelListData[]} = {};
+  public readonly notifications: EventEmitter<{serverID: string, type: string, parsedObject: any}> = new EventEmitter<{serverID: string, type: string, parsedObject: any}>();
 
   constructor() { }
 
@@ -15,6 +16,11 @@ export class ListService {
     } else {
       this.channelList[serverID] = [];
     }
+    this.notifications.emit({
+      serverID,
+      type: 'start-list',
+      parsedObject: {}
+    });
   }
 
   public getList(serverID: string) {
@@ -26,7 +32,11 @@ export class ListService {
   }
 
   public endList(serverID: string) {
-
+    this.notifications.emit({
+      serverID,
+      type: 'end-list',
+      parsedObject: this.channelList[serverID]
+    });
   }
 }
 
