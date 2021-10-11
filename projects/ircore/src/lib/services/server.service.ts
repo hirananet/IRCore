@@ -1,3 +1,4 @@
+import { ListService } from './list.service';
 import { Message } from './../domain/message';
 import { GlobUserService } from './glob-user.service';
 import { PrivsService } from './privs.service';
@@ -17,11 +18,12 @@ export class ServerService {
   private static readonly VERSION = '3.0';
   private static servers: {[key: string]: ServerData} = {};
 
-  constructor(private chanSrv: ChannelsService, noticeSrv: NoticesService, private privSrv: PrivsService, globUsr: GlobUserService) {
+  constructor(private chanSrv: ChannelsService, noticeSrv: NoticesService, private privSrv: PrivsService, globUsr: GlobUserService, listSrv: ListService) {
     IRCParserV3.setChanSrv(chanSrv);
     IRCParserV3.setNoticeSrv(noticeSrv)
     IRCParserV3.setPrivSrv(privSrv);
     IRCParserV3.setGlobUserSrv(globUsr);
+    IRCParserV3.setListService(listSrv);
     IRCParserV3.addDefaultListeners();
   }
 
