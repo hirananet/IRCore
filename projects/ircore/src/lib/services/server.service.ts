@@ -27,7 +27,7 @@ export class ServerService {
     IRCParserV3.addDefaultListeners();
   }
 
-  public connect(server: ServerData) {
+  public connect(server: ServerData): void {
     ServerService.servers[server.serverID] = server;
     server.websocket = new CustomWebSocket();
     const proto = server.withSSL ? 'wss' : 'ws';
@@ -64,35 +64,35 @@ export class ServerService {
     });
   }
 
-  public sendWhox(serverID: string, channel: string) {
+  public sendWhox(serverID: string, channel: string): void {
     channel = channel[0] === '#' ? channel : '#' + channel;
     this.sendToServer(serverID, 'WHO ' + channel);
   }
 
-  public join(serverID: string, channel: string) {
+  public join(serverID: string, channel: string): void {
     if(channel[0] != '#') {
       channel = '#' + channel;
     }
     this.sendToServer(serverID, 'JOIN ' + channel)
   }
 
-  public leave(serverID: string, channel: string) {
+  public leave(serverID: string, channel: string): void {
     if(channel[0] != '#') {
       channel = '#' + channel;
     }
     this.sendToServer(serverID, 'PART ' + channel)
   }
 
-  public setNick(serverID: string, nick: string) {
+  public setNick(serverID: string, nick: string): void {
     IRCParserV3.setNick(nick, serverID);
     this.sendToServer(serverID, 'NICK ' + nick);
   }
 
-  public identify(serverID: string, password: string) {
+  public identify(serverID: string, password: string): void {
     this.sendToServer(serverID, 'PRIVMSG NickServ identify ' + password);
   }
 
-  public serverPass(serverID: string, user: string, password: string) {
+  public serverPass(serverID: string, user: string, password: string): void {
     this.sendToServer(serverID, 'PASS ' + user + ':' + password);
   }
 
@@ -100,24 +100,28 @@ export class ServerService {
     this.getServerById(serverID).websocket?.disconnect();
   }
 
-  public getServerById(id: string) {
+  public reconnect(serverID: string): void {
+    this.getServerById(serverID).websocket?.reconnect();
+  }
+
+  public getServerById(id: string): ServerData {
     return ServerService.servers[id];
   }
 
-  public requestChannelList(serverID: string) {
+  public requestChannelList(serverID: string): void {
     this.sendToServer(serverID, 'LIST');
   }
 
-  public getServerByIrcServer(ircServer: string) {
+  public getServerByIrcServer(ircServer: string): ServerData | undefined {
     const server = Object.keys(ServerService.servers).find(key => ServerService.servers[key].ircServer === ircServer);
     return server ? ServerService.servers[server] : undefined;
   }
 
-  public sendToServer(serverID: string, raw: string) {
+  public sendToServer(serverID: string, raw: string): void {
     this.getServerById(serverID).websocket?.send(raw);
   }
 
-  public sendPrivMSG(serverID: string, nick: string, message: string) {
+  public sendPrivMSG(serverID: string, nick: string, message: string): void {
     if(nick[0] == '#') {
       throw 'invalid nick';
     }
@@ -128,7 +132,7 @@ export class ServerService {
     this.privSrv.onNewMessage(serverID, nick, msg.author, msg);
   }
 
-  public sendChannelMSG(serverID: string, channel: string, message: string) {
+  public sendChannelMSG(serverID: string, channel: string, message: string): void {
     if(channel[0]!='#') {
       throw 'invalid channel, must start with #';
     }
@@ -139,7 +143,7 @@ export class ServerService {
     this.chanSrv.addMessageToChannel(serverID, new Channel(channel), msg);
   }
 
-  public sendTo(serverID: string, chanOrNick: string, message: string) {
+  public sendTo(serverID: string, chanOrNick: string, message: string): void {
     const MAX_CHARS = 450;
     while(message.length > MAX_CHARS) {
       this.sendToServer(serverID, `PRIVMSG ${chanOrNick} :${message.substr(0, MAX_CHARS)}`);
@@ -148,11 +152,11 @@ export class ServerService {
     this.sendToServer(serverID, `PRIVMSG ${chanOrNick} :${message}`);
   }
 
-  public getCurrentNick(serverID: string) {
+  public getCurrentNick(serverID: string): string {
     return IRCParserV3.getCurrentNick(serverID);
   }
 
-  public static getServerData(id: string) {
+  public static getServerData(id: string): ServerData {
     return ServerService.servers[id];
   }
 }
