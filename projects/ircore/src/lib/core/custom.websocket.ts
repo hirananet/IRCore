@@ -32,25 +32,22 @@ export class CustomWebSocket {
         this.messageReceived.emit(new MessageData(uuid, msg));
       },
       err => {
-        const status = new ConnectionStatusData<any>();
+        const status = new ConnectionStatusData<{uuid: string, err: any}>();
         status.status = ConnectionStatus.ERROR;
         status.data = {uuid, err};
-        console.error('WS errror', uuid, err, err.code);
         this.statusChanged.emit(status);
         this.connected = false;
       });
       this.onCloseSubject.subscribe((e) => {
-        const status = new ConnectionStatusData<string>();
+        const status = new ConnectionStatusData<{uuid: string, evt: any}>();
         status.status = ConnectionStatus.DISCONNECTED;
-        console.log('DSC', e);
-        status.data = uuid;
+        status.data = {uuid, evt: e};
         this.statusChanged.emit(status);
         this.connected = false;
       });
       this.onOpenSubject.subscribe(() => {
         const status = new ConnectionStatusData<string>();
         status.status = ConnectionStatus.CONNECTED;
-        console.log('CN');
         status.data = uuid;
         this.statusChanged.emit(status);
         this.connected = true;
