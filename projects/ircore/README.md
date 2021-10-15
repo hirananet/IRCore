@@ -100,6 +100,22 @@ constructor(private readonly notySrv: NoticesService, private readonly serverSrv
 - `public static getServerData(id: string): ServerData `
   This is for globally find ServerData of serverID without inject the service instance.
 
+## NoticesService
+
+This service is used to handle global server notices, as MOTD, and responses of commands, it save capability list and global notices message list.
+
+### Usage example:
+
+### List of methods:
+
+- `public getCaps(serverID: string): string[]`
+  Get capability list of serverID (response of /CAP).
+
+- `public getNotices(serverID: string): {msg: string, isNotice: boolean}[]`
+  Get list of notices messages received in serverID, this list is a reference, when new message is comming, is it added using push.
+  You can use the response of this command in ngFor for example, and is automatically updated when new messages is added.
+  The isNotice boolean indicated that the message received is using exactly code: 'NOTICE' not another code number.
+
 # Event Handling
 
 ### this.notices.notifications

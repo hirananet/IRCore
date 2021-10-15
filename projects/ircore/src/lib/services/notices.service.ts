@@ -12,21 +12,25 @@ export class NoticesService {
 
   constructor() { }
 
-  public addNoticeToServer(serverID: string, msg: string, isNotice: boolean) {
+  public addNoticeToServer(serverID: string, msg: string, isNotice: boolean): void {
     if(!this.notices[serverID]) {
       this.notices[serverID] = [];
     }
     this.notices[serverID].push({msg, isNotice});
   }
 
-  public setCaps(serverID: string, capability: string) {
+  public getNotices(serverID: string): {msg: string, isNotice: boolean}[] {
+    return this.notices[serverID];
+  }
+
+  public setCaps(serverID: string, capability: string): void {
     if(!this.capabilities[serverID]) {
       this.capabilities[serverID] = [];
     }
     this.capabilities[serverID].push(capability);
   }
 
-  public getCaps(serverID: string) {
+  public getCaps(serverID: string): string[] {
     return this.capabilities[serverID] ? this.capabilities[serverID] : [];
   }
 }
