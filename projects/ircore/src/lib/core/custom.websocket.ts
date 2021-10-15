@@ -39,11 +39,31 @@ export class CustomWebSocket {
         this.statusChanged.emit(status);
         this.connected = false;
       });
-      this.onCloseSubject.subscribe((e) => {
+      this.onCloseSubject.subscribe((e: any) => {
         const status = new ConnectionStatusData<any>();
         status.status = ConnectionStatus.DISCONNECTED;
         status.serverID = uuid;
-        status.data = e;
+        const ecodes: any = {
+          '1000': 'Disconnected from this server.',
+          '1001': 'Server connection lost.',
+          '1002': 'Protocol error.',
+          '1003': 'Invalid data type sended.',
+          '1004': 'Reserved error. Undefined.',
+          '1005': 'Not status code was actually present.',
+          '1006': 'Abruptly connection lost.',
+          '1007': 'Message format error or inconsistent.',
+          '1008': 'Policy violation.',
+          '1009': 'Message too big, can\'t process.',
+          '1010': 'Client closed connection, handshake not responsed, websocket support in this server?.',
+          '1011': 'Server connection error, can\'t fullfillment the request.',
+          '1015': 'TLS handshake error, invalid server certificate?.'
+        };
+        const reason = ecodes[e.code] ? ecodes[e.code] : 'Unknown error reason.';
+        status.data = {
+          code: e.code,
+          reason,
+          event: e
+        };
         this.statusChanged.emit(status);
         this.connected = false;
       });
