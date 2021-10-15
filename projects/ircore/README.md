@@ -87,9 +87,11 @@ constructor(private readonly notySrv: NoticesService, private readonly serverSrv
 
 - `public sendPrivMSG(serverID: string, nick: string, message: string): void`
   Send private message to nick
+  This command adds the message to private service messages list.
 
 - `public sendChannelMSG(serverID: string, channel: string, message: string): void`
   Send message to channel, is not necessary to add # in channel name.
+  This command adds the message to channel service messages list.
 
 - `public sendTo(serverID: string, chanOrNick: string, message: string): void`
   Send message to channel or privmessage, in this case you need to add # in channels
@@ -148,6 +150,37 @@ Catches the response of who, and similar commands to full the information about 
     public chanModes: {[channelID: string]: string[]} = {};
   }
   ```
+
+## ChannelService
+
+This service is designed to handle channels, the messages, users in channel, notifications, etc.
+
+### Example of usage
+
+```
+  constructor(private readonly channelsSrv: ChannelsService) {
+    channelsSrv.getChannel('SRVID', new Channel('Channel'));
+  }
+```
+**We recommends you use new Channel(myChannel) to pass the channel parameter in order to sanitize formats**
+
+### List of methods
+
+- `public getChannel(serverID: string, channel: Channel): Channel`
+  Get the channel and the data:
+  ```
+  export class Channel {
+    public name: string;
+    public hashedName: string;
+    public users: UserData[] = [];
+    public topic?: string;
+    public channelModes: string[] = [];
+    public messages: Message[] = [];
+  }
+  ```
+
+- `public getChannelList(serverID: string): Channel[]`
+  Get all channels opened in a server
 
 # Event Handling
 
