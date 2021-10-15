@@ -135,7 +135,7 @@ Catches the response of who, and similar commands to full the information about 
 - `public getUser(serverID: string, nick: SimplyUser): UserData`
   Get the user data of nick in a server:
   ```
-  export class UserData {
+  class UserData {
     public fullNick: FullNick = new FullNick();
     public server?: string;
     public netOp: boolean = false;
@@ -169,7 +169,7 @@ This service is designed to handle channels, the messages, users in channel, not
 - `public getChannel(serverID: string, channel: Channel): Channel`
   Get the channel and the data:
   ```
-  export class Channel {
+  class Channel {
     public name: string;
     public hashedName: string;
     public users: UserData[] = [];
@@ -181,6 +181,29 @@ This service is designed to handle channels, the messages, users in channel, not
 
 - `public getChannelList(serverID: string): Channel[]`
   Get all channels opened in a server
+
+## PrivsService
+
+This service is designed to handle private messages, and list of privs.
+
+### List of methods
+
+- `public getChat(serverID: string, chatName: string): PrivChat`
+  Get a private chat between you and another user.
+  chatName is the name of the another user of server.
+  ```
+  class PrivChat {
+    public name?: string;
+    public target?: UserData;
+    public messages: Message[] = [];
+  }
+  ```
+
+- `public removePriv(serverID: string, chatName: string): boolean`
+Remove a chat from the chat list, and return true or folse if exists and removed or not exists.
+
+- `public getChats(serverID: string): PrivChat[]`
+Get the list of private chats.
 
 # Event Handling
 

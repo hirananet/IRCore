@@ -44,7 +44,11 @@ export class PrivsService {
     }
   }
 
-  public getChat(serverID: string, chatName: string) {
+  public getChats(serverID: string): PrivChat[] {
+    return this.privsOpened[serverID];
+  }
+
+  public getChat(serverID: string, chatName: string): PrivChat {
     if(!this.privsOpened[serverID]) {
       this.privsOpened[serverID] = [];
     }
@@ -58,10 +62,12 @@ export class PrivsService {
     return privChat;
   }
 
-  public removePriv(serverID: string, chatName: string) {
+  public removePriv(serverID: string, chatName: string): boolean {
     const chatIndex = this.privsOpened[serverID]?.findIndex(chat => chat.name == chatName);
     if(chatIndex >= 0) {
       this.privsOpened[serverID].splice(chatIndex, 1);
+      return true;
     }
+    return false;
   }
 }
