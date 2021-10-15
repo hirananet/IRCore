@@ -32,23 +32,25 @@ export class CustomWebSocket {
         this.messageReceived.emit(new MessageData(uuid, msg));
       },
       err => {
-        const status = new ConnectionStatusData<{uuid: string, err: any}>();
+        const status = new ConnectionStatusData<any>();
         status.status = ConnectionStatus.ERROR;
-        status.data = {uuid, err};
+        status.serverID = uuid;
+        status.data = err;
         this.statusChanged.emit(status);
         this.connected = false;
       });
       this.onCloseSubject.subscribe((e) => {
-        const status = new ConnectionStatusData<{uuid: string, evt: any}>();
+        const status = new ConnectionStatusData<any>();
         status.status = ConnectionStatus.DISCONNECTED;
-        status.data = {uuid, evt: e};
+        status.serverID = uuid;
+        status.data = e;
         this.statusChanged.emit(status);
         this.connected = false;
       });
       this.onOpenSubject.subscribe(() => {
-        const status = new ConnectionStatusData<string>();
+        const status = new ConnectionStatusData<void>();
         status.status = ConnectionStatus.CONNECTED;
-        status.data = uuid;
+        status.serverID = uuid;
         this.statusChanged.emit(status);
         this.connected = true;
       });
@@ -71,6 +73,7 @@ export class CustomWebSocket {
 
 export class ConnectionStatusData<t> {
   public status?: ConnectionStatus;
+  public serverID: string = '';
   public data?: t;
 }
 
