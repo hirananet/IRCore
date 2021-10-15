@@ -10,7 +10,7 @@ export class ListService {
 
   constructor() { }
 
-  public startList(serverID: string) {
+  public startList(serverID: string): void {
     if(this.channelList[serverID]) {
       this.channelList[serverID].splice(0);
     } else {
@@ -23,15 +23,15 @@ export class ListService {
     });
   }
 
-  public getList(serverID: string) {
+  public getList(serverID: string): ChannelListData[] {
     return this.channelList[serverID];
   }
 
-  public addChannel(serverID: string, channel: ChannelListData) {
+  public addChannel(serverID: string, channel: ChannelListData): void {
     this.channelList[serverID].push(channel);
   }
 
-  public endList(serverID: string) {
+  public endList(serverID: string): void {
     this.notifications.emit({
       serverID,
       type: 'end-list',

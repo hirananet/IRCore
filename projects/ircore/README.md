@@ -104,8 +104,6 @@ constructor(private readonly notySrv: NoticesService, private readonly serverSrv
 
 This service is used to handle global server notices, as MOTD, and responses of commands, it save capability list and global notices message list.
 
-### Usage example:
-
 ### List of methods:
 
 - `public getCaps(serverID: string): string[]`
@@ -115,6 +113,41 @@ This service is used to handle global server notices, as MOTD, and responses of 
   Get list of notices messages received in serverID, this list is a reference, when new message is comming, is it added using push.
   You can use the response of this command in ngFor for example, and is automatically updated when new messages is added.
   The isNotice boolean indicated that the message received is using exactly code: 'NOTICE' not another code number.
+
+## ListService
+
+This service is used to handle /LIST command response (list of all channels in the server), it has a list of channels.
+
+### List of methods
+
+- `public getList(serverID: string): ChannelListData[]`
+  This get a list of channels, is a reference, then when new channels are added this list is expanded, when a channel is removed, this list decrease. You can use this list in ngFor.
+
+## GlobUserService
+
+This service save the global data of users, as ip, nick, realName, usermodes (for example G for ignore privates), isAway, etc.
+Catches the response of who, and similar commands to full the information about a nick
+
+### List of methods
+
+- `public getUser(serverID: string, nick: SimplyUser): UserData`
+  Get the user data of nick in a server:
+  ```
+  export class UserData {
+    public fullNick: FullNick = new FullNick();
+    public server?: string;
+    public netOp: boolean = false;
+    public realName?: string;
+    public modes?: string[]; // user modes
+    public ssl: boolean = false;
+    public registeredNick?: string;
+    public isAway: boolean = false;
+    public idle?: number;
+    public lastLogin?: number;
+    public account?: string;
+    public chanModes: {[channelID: string]: string[]} = {};
+  }
+  ```
 
 # Event Handling
 
