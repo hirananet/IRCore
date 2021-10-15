@@ -245,6 +245,12 @@ types:
 * away: away message
 * gmode: is messaging you, and you have user mode +g set.
 
+### this.ListService.notifications
+
+types:
+* start-list: initialized new list of channels
+* end-list: end of command /LIST and in parsedObject you get the list of channels reference (same than .getList(serverID))
+
 # IRCParser V3
 
 ## Extensions
