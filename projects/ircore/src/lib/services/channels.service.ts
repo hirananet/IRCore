@@ -1,3 +1,4 @@
+import { IndexedDBService } from './../core/indexed-db/indexed-db.service';
 import { GlobUserService } from './glob-user.service';
 import { RawMessage } from './../domain/rawMessage';
 import { Message } from './../domain/message';
@@ -14,11 +15,10 @@ export class ChannelsService {
   public readonly notifications: EventEmitter<{raw: RawMessage, type: string, parsedObject: any}> = new EventEmitter<{raw: RawMessage, type: string, parsedObject: any}>();
   private autoSave: boolean = false;
 
-  constructor(private gUser: GlobUserService) { }
+  constructor(private gUser: GlobUserService, private readonly idb: IndexedDBService) { }
 
   public enableAutoSave(): void {
     this.autoSave = true;
-    this.loadMessages();
   }
 
   public newChannelList(serverID: string, channels: Channel[]) {
@@ -29,7 +29,12 @@ export class ChannelsService {
     if(!this.channelsOpened[serverID]) {
       this.channelsOpened[serverID] = [];
     }
-    this.channelsOpened[serverID].push(channel);
+    const prevChan = this.channelsOpened[serverID].find(chan => chan.hashedName == channel.hashedName);
+    if(!prevChan) {
+      this.channelsOpened[serverID].push(channel);
+    } else {
+      // ya existía este channel
+    }
   }
 
   public addUserToChannel(serverID: string, channel: Channel, user: SimplyUser) {
@@ -128,6 +133,7 @@ export class ChannelsService {
       return;
     }
     chan.messages.push(message);
+    this.saveMessages(serverID, channel);
   }
 
   private _removeUser(chan: Channel, user: SimplyUser) {
@@ -139,12 +145,22 @@ export class ChannelsService {
     }
   }
 
-  private saveMessages(): void {
+  private saveMessages(serverID: string, channel: Channel): void {
     if(!this.autoSave) return;
+    this.idb.getDatabase().addOrUpdateChannel(serverID, channel.hashedName, JSON.stringify(channel.messages));
   }
 
-  private loadMessages(): void {
-
+  async loadMessages(serverID: string) {
+    if(!this.autoSave) return;
+    const channels = await this.idb.getDatabase().getChannelsOfServer(serverID);
+    channels.forEach(chan => {
+      const chnl = new Channel(chan.channelhash as string);
+      this.addChannel(serverID, chnl);
+      const messages = JSON.parse(chan.messages as string);
+      messages.forEach((message: Message) => {
+        this.addMessageToChannel(serverID, chnl, message);
+      });
+    });
   }
 
 }

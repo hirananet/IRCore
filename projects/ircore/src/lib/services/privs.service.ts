@@ -34,10 +34,12 @@ export class PrivsService {
       privChat.target = this.gUser.getUser(serverID, UserData.parseUser(author));
       privChat.messages.push(msg);
       this.privsOpened[serverID].push(privChat);
+      this.saveMessages(serverID, chatName, author, privChat.messages);
       newChat = true;
     } else {
       newChat = chatObj.messages.length == 0;
       chatObj.messages.push(msg);
+      this.saveMessages(serverID, chatName, author, chatObj.messages);
     }
     if(newChat) {
       this.notifications.emit({
@@ -48,7 +50,6 @@ export class PrivsService {
         type: 'new-priv'
       });
     }
-    this.saveMessages(serverID, chatName, author);
   }
 
   public getChats(serverID: string): PrivChat[] {
@@ -78,17 +79,9 @@ export class PrivsService {
     return false;
   }
 
-  private saveMessages(serverID: string, chatName: string, author: string): void { // save privates on storage
+  private saveMessages(serverID: string, chatName: string, author: string, messages: Message[]): void { // save privates on storage
     if(!this.autoSave) return;
-    this.idb.getDatabase().addOrUpdatePrivate(serverID, author, chatName,
-      JSON.stringify(
-        this.getChat(serverID, chatName).messages.map(message => {
-          const _msg = Object.assign({}, message);
-          _msg.preloaded = true;
-          return _msg;
-        })
-      )
-    );
+    this.idb.getDatabase().addOrUpdatePrivate(serverID, author, chatName, JSON.stringify(messages));
   }
 
   async loadMessages(serverID: string) { // load all privates from storage

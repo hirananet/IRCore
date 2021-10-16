@@ -3,13 +3,15 @@ import Dexie, { PromiseExtended } from 'dexie';
 export class MessagesDatabase extends Dexie {
 
   public privates!: Dexie.Table<PrivateChat, string>;
+  public channels!: Dexie.Table<ChannelChat, string>;
 
   public constructor() {
     super("MessagesDatabase");
     // indices
     // https://dexie.org/docs/API-Reference#quick-reference
     this.version(1).stores({
-      privates: "serverid,chatname"
+      privates: "serverid,chatname",
+      channels: "serverid,channelhash"
     });
   }
 
@@ -30,6 +32,27 @@ export class MessagesDatabase extends Dexie {
     })
   }
 
+  async getAllChannels(): Promise<ChannelChat[]> {
+    return await this.channels.toArray();
+  }
+
+  async getChannelsOfServer(serverID: string): Promise<ChannelChat[]> {
+    return await this.channels.where('serverid').equalsIgnoreCase(serverID).toArray();
+  }
+
+  addOrUpdateChannel(serverID: string, channelHash: string, messages: string): PromiseExtended<string> {
+    return this.channels.put({
+      serverid: serverID,
+      channelhash: channelHash,
+      messages
+    });
+  }
+}
+
+export interface ChannelChat {
+  serverid?: string;
+  channelhash?: string;
+  messages?: string;
 }
 
 export interface PrivateChat {

@@ -44,8 +44,9 @@ export class ServerService {
         subsc.unsubscribe();
       }
     });
-    // cargamos los privados
+    // cargamos los privados si están habilitados
     this.privSrv.loadMessages(server.serverID);
+    this.chanSrv.loadMessages(server.serverID);
     if(server.withWebSocket) {
       server.websocket.connect(`${proto}://${server.ircServer}:${server.ircPort}`, server.serverID);
     } else {
