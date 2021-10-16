@@ -1,3 +1,4 @@
+import { IndexedDBService } from './../core/indexed-db/indexed-db.service';
 import { GlobUserService } from './glob-user.service';
 import { RawMessage } from './../domain/rawMessage';
 import { Message } from './../domain/message';
@@ -13,8 +14,13 @@ export class PrivsService {
 
   private privsOpened: {[serverID: string]: PrivChat[]} = {};
   public readonly notifications: EventEmitter<{raw?: RawMessage, type: string, parsedObject?: any}> = new EventEmitter<{raw?: RawMessage, type: string, parsedObject?: any}>();
+  private autoSave: boolean = false;
 
-  constructor(private readonly gUser: GlobUserService) { }
+  constructor(private readonly gUser: GlobUserService, private readonly idb: IndexedDBService) { }
+
+  public enableAutoSave(): void {
+    this.autoSave = true;
+  }
 
   public onNewMessage(serverID: string, chatName: string, author: string, msg: Message) {
     if(!this.privsOpened[serverID]) {
@@ -42,6 +48,7 @@ export class PrivsService {
         type: 'new-priv'
       });
     }
+    this.saveMessages(serverID, chatName, author);
   }
 
   public getChats(serverID: string): PrivChat[] {
@@ -70,4 +77,29 @@ export class PrivsService {
     }
     return false;
   }
+
+  private saveMessages(serverID: string, chatName: string, author: string): void { // save privates on storage
+    if(!this.autoSave) return;
+    this.idb.getDatabase().addOrUpdatePrivate(serverID, author, chatName,
+      JSON.stringify(
+        this.getChat(serverID, chatName).messages.map(message => {
+          const _msg = Object.assign({}, message);
+          _msg.preloaded = true;
+          return _msg;
+        })
+      )
+    );
+  }
+
+  async loadMessages(serverID: string) { // load all privates from storage
+    if(!this.autoSave) return;
+    const privates = await this.idb.getDatabase().getPrivatesOfServer(serverID);
+    privates.forEach(priv => {
+      const messages = JSON.parse(priv.messages as string);
+      messages.forEach((msg: Message) => {
+        this.onNewMessage(priv.serverid as string, priv.chatname as string, priv.author as string, msg);
+      });
+    });
+  }
+
 }

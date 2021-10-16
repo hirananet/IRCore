@@ -12,8 +12,14 @@ export class ChannelsService {
 
   private channelsOpened: {[serverID: string]: Channel[]} = {};
   public readonly notifications: EventEmitter<{raw: RawMessage, type: string, parsedObject: any}> = new EventEmitter<{raw: RawMessage, type: string, parsedObject: any}>();
+  private autoSave: boolean = false;
 
   constructor(private gUser: GlobUserService) { }
+
+  public enableAutoSave(): void {
+    this.autoSave = true;
+    this.loadMessages();
+  }
 
   public newChannelList(serverID: string, channels: Channel[]) {
     this.channelsOpened[serverID] = channels;
@@ -131,6 +137,14 @@ export class ChannelsService {
     } else {
       chan.users.splice(uIdx, 1);
     }
+  }
+
+  private saveMessages(): void {
+    if(!this.autoSave) return;
+  }
+
+  private loadMessages(): void {
+
   }
 
 }
