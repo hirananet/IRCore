@@ -22,6 +22,10 @@ export class PrivsService {
     this.autoSave = true;
   }
 
+  public disableAutoSave(): void {
+    this.autoSave = true;
+  }
+
   public onNewMessage(serverID: string, chatName: string, author: string, msg: Message) {
     if(!this.privsOpened[serverID]) {
       this.privsOpened[serverID] = [];

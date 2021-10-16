@@ -21,6 +21,10 @@ export class ChannelsService {
     this.autoSave = true;
   }
 
+  public disableAutoSave(): void {
+    this.autoSave = true;
+  }
+
   public newChannelList(serverID: string, channels: Channel[]) {
     this.channelsOpened[serverID] = channels;
   }

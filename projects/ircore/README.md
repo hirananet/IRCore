@@ -208,6 +208,14 @@ This service is designed to handle channels, the messages, users in channel, not
 
   Get all channels opened in a server
 
+- `public enableAutoSave(): void`
+
+  Enable autosave of messages in indexedDB, and if you call this function before to connect, then when is connected to a server, this try to load old messages from indexedDB using serverID (for this reason, we recommends to you to use hashed server host as serverID in order to coincide the hashes in diferent sessions for the same server host, for example: `serverID = hash('irc.hirana.net')`)
+
+  By default, this feature is disabled.
+
+- `public disableAutoSave(): void`
+
 ## PrivsService
 
 This service is designed to handle private messages, and list of privs.
@@ -228,11 +236,21 @@ This service is designed to handle private messages, and list of privs.
 
 - `public removePriv(serverID: string, chatName: string): boolean`
 
-Remove a chat from the chat list, and return true or folse if exists and removed or not exists.
+  Remove a chat from the chat list, and return true or folse if exists and removed or not exists.
 
 - `public getChats(serverID: string): PrivChat[]`
 
-Get the list of private chats.
+  Get the list of private chats.
+
+
+- `public enableAutoSave(): void`
+
+  Enable autosave of messages in indexedDB, and if you call this function before to connect, then when is connected to a server, this try to load old messages from indexedDB using serverID (for this reason, we recommends to you to use hashed server host as serverID in order to coincide the hashes in diferent sessions for the same server host, for example: `serverID = hash('irc.hirana.net')`)
+
+  By default, this feature is disabled.
+
+- `public disableAutoSave(): void`
+
 
 # Event Handling
 
