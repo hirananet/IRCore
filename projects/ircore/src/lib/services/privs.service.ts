@@ -38,12 +38,16 @@ export class PrivsService {
       privChat.target = this.gUser.getUser(serverID, UserData.parseUser(author));
       privChat.messages.push(msg);
       this.privsOpened[serverID].push(privChat);
-      this.saveMessages(serverID, chatName, author, privChat.messages);
+      if(!msg.preloaded) {
+        this.saveMessages(serverID, chatName, author, privChat.messages);
+      }
       newChat = true;
     } else {
       newChat = chatObj.messages.length == 0;
       chatObj.messages.push(msg);
-      this.saveMessages(serverID, chatName, author, chatObj.messages);
+      if(!msg.preloaded) {
+        this.saveMessages(serverID, chatName, author, chatObj.messages);
+      }
     }
     if(newChat) {
       this.notifications.emit({

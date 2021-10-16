@@ -137,7 +137,9 @@ export class ChannelsService {
       return;
     }
     chan.messages.push(message);
-    this.saveMessages(serverID, channel);
+    if(!message.preloaded) {
+      this.saveMessages(serverID, channel);
+    }
   }
 
   private _removeUser(chan: Channel, user: SimplyUser) {
