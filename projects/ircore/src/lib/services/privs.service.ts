@@ -82,6 +82,9 @@ export class PrivsService {
     const chatIndex = this.privsOpened[serverID]?.findIndex(chat => chat.name == chatName);
     if(chatIndex >= 0) {
       this.privsOpened[serverID].splice(chatIndex, 1);
+      this.idb.getDatabase().deletePrivate(serverID, chatName).then((count) => {
+        // console.log('Deleted: ', count);
+      });
       return true;
     }
     return false;
