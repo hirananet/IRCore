@@ -135,6 +135,13 @@ export class ServerService {
     this.privSrv.onNewMessage(serverID, nick, msg.author, msg);
   }
 
+  public whois(serverID: string, nick: string): void {
+    if(nick[0] == '#') {
+      throw 'invalid nick';
+    }
+    this.sendToServer(serverID, `WHOIS ${nick}`);
+  }
+
   public sendChannelMSG(serverID: string, channel: string, message: string): void {
     if(channel[0]!='#') {
       throw 'invalid channel, must start with #';

@@ -555,6 +555,10 @@ export class IRCParserV3 {
       '311': (data: RawMessage) => {
         // :hiperion.hirana.net 311 Zerpiente Zerpiente Zerpiente Hirana-8kh.svf.168.181.IP * :IRCoreV2
         this.globUsrSrv.getUser(data.serverID, user).realName = data.content;
+        this.noticeSrv.notifications.emit({
+          raw: data,
+          type: 'whois-start'
+        });
       },
       '312': (data: RawMessage) => {
         // :avalon.hira.io 312 Tulkalex Tulkalex avalon.hira.io :Avalon - Frankfurt, Germany
