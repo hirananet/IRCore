@@ -138,7 +138,7 @@ export class ChannelsService {
     }
     chan.messages.push(message);
     if(!message.preloaded) {
-      this.saveMessages(serverID, channel);
+      this.saveMessages(serverID, chan);
     }
   }
 
