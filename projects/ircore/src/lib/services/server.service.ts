@@ -1,3 +1,4 @@
+import { Time } from './../utils/Time.util';
 import { IndexedDBService } from './../core/indexed-db/indexed-db.service';
 import { ListService } from './list.service';
 import { Message } from './../domain/message';
@@ -138,6 +139,7 @@ export class ServerService {
     const msg = new Message();
     msg.author = IRCParserV3.getCurrentNick(serverID);
     msg.content = message;
+    msg.date = Time.getTime() + ' ' + Time.getDateStr()
     this.privSrv.onNewMessage(serverID, nick, msg.author, msg);
   }
 
@@ -156,6 +158,7 @@ export class ServerService {
     const msg = new Message();
     msg.author = IRCParserV3.getCurrentNick(serverID);
     msg.content = message;
+    msg.date = Time.getTime() + ' ' + Time.getDateStr()
     this.chanSrv.addMessageToChannel(serverID, new Channel(channel), msg);
   }
 
