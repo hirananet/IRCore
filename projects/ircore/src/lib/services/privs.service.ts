@@ -101,6 +101,7 @@ export class PrivsService {
     privates.forEach(priv => {
       const messages = JSON.parse(priv.messages as string);
       messages.forEach((msg: Message) => {
+        msg.preloaded = true;
         this.onNewMessage(priv.serverid as string, priv.chatname as string, priv.author as string, msg);
       });
     });

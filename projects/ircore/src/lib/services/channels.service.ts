@@ -164,6 +164,7 @@ export class ChannelsService {
       this.addChannel(serverID, chnl);
       const messages = JSON.parse(chan.messages as string);
       messages.forEach((message: Message) => {
+        message.preloaded = true;
         this.addMessageToChannel(serverID, chnl, message);
       });
     });
