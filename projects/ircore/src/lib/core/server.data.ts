@@ -22,6 +22,8 @@ export class ServerData {
   /////////////////////////
 
   public websocket?: CustomWebSocket;
+
+  public hncBouncered: boolean = false;
 }
 
 export class User {
