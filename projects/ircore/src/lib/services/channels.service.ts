@@ -136,9 +136,11 @@ export class ChannelsService {
       console.error('Channel not found #3?', channel, this.channelsOpened[serverID]);
       return;
     }
-    chan.messages.push(message);
     if(!message.preloaded) {
+      chan.messages.push(message);
       this.saveMessages(serverID, chan);
+    } else {
+      chan.messages.unshift(message);
     }
   }
 
@@ -162,8 +164,8 @@ export class ChannelsService {
     channels.forEach(chan => {
       const chnl = new Channel(chan.channelhash as string);
       this.addChannel(serverID, chnl);
-      const messages = JSON.parse(chan.messages as string);
-      messages.forEach((message: Message) => {
+      const messages: Message[] = JSON.parse(chan.messages as string);
+      messages.reverse().forEach((message: Message) => {
         message.preloaded = true;
         this.addMessageToChannel(serverID, chnl, message);
       });

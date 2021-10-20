@@ -36,17 +36,21 @@ export class PrivsService {
       const privChat = new PrivChat();
       privChat.name = chatName;
       privChat.target = this.gUser.getUser(serverID, UserData.parseUser(author));
-      privChat.messages.push(msg);
-      this.privsOpened[serverID].push(privChat);
       if(!msg.preloaded) {
+        privChat.messages.push(msg);
         this.saveMessages(serverID, chatName, author, privChat.messages);
+      } else {
+        privChat.messages.unshift(msg)
       }
+      this.privsOpened[serverID].push(privChat);
       newChat = true;
     } else {
       newChat = chatObj.messages.length == 0;
-      chatObj.messages.push(msg);
       if(!msg.preloaded) {
+        chatObj.messages.push(msg);
         this.saveMessages(serverID, chatName, author, chatObj.messages);
+      } else {
+        chatObj.messages.unshift(msg)
       }
     }
     if(newChat) {
@@ -99,8 +103,8 @@ export class PrivsService {
     if(!this.autoSave) return;
     const privates = await this.idb.getDatabase().getPrivatesOfServer(serverID);
     privates.forEach(priv => {
-      const messages = JSON.parse(priv.messages as string);
-      messages.forEach((msg: Message) => {
+      const messages: Message[] = JSON.parse(priv.messages as string);
+      messages.reverse().forEach((msg: Message) => {
         msg.preloaded = true;
         this.onNewMessage(priv.serverid as string, priv.chatname as string, priv.author as string, msg);
       });
