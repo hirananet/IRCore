@@ -285,6 +285,7 @@ The event emitter has this structure:
 ### MOTD event
 
 Type: 'motd'
+
 ParsedObject: <Void>
 
 Trigger: code 375, the first line of MOTD
@@ -292,6 +293,7 @@ Trigger: code 375, the first line of MOTD
 ### END MOTD event
 
 Type: 'endMotd'
+
 ParsedObject: <void>
 
 Trigger: code 376, the last line of MOTD
@@ -299,6 +301,7 @@ Trigger: code 376, the last line of MOTD
 ### Require pass event
 
 Type: 'require-pass'
+
 ParsedObject: <void>
 
 Trigger: code 464, usually sended by BNC to request /PASS command.
@@ -306,13 +309,31 @@ Trigger: code 464, usually sended by BNC to request /PASS command.
 ### Nick in use event
 
 Type: 'nick-in-use'
+
 ParsedObject: {}
 
 Trigger: code 433, when you try to set a nick in use.
 
+### Nick changed
+
+Type: 'nick-changed'
+
+ParsedObject: Nicks
+
+Nicks:
+```
+{
+  originalNick: SimplyUser,
+  newNick: <string>
+}
+```
+
+Trigger: code NICK, when any user change it nick
+
 ### Notice event
 
 Type: 'notice'
+
 ParsedObject: <void>
 
 Trigger: code NOTICE, when a message with "NOTICE" received (not triggered if it is a external notice to channel)
@@ -320,6 +341,7 @@ Trigger: code NOTICE, when a message with "NOTICE" received (not triggered if it
 ### Whois start:
 
 Type: 'whois-start'
+
 PrsedObject: <void>
 
 Trigger: code 311, first message in response of whois command.
@@ -327,30 +349,167 @@ Trigger: code 311, first message in response of whois command.
 ### Uknown message:
 
 Type: 'uknown'
+
 ParsedObject: <void>
 
 Trigger: all messages with a not known code. (like 666)
 
-### this.channels.notifications
+## ChannelsService Emitter
 
-types:
-* message: new message in channel
-* user-mode: User mode changed in channel
-* chan-mode: channel mode changed
-* nick-changed: all-channels user change nick
-* topic: topic changed
-* channels: list of channels of me updated
-* names: response to command names. (users in channel)
-* kick: user kicked from channel
-* new-channel: me joined to new channel
-* join: user joined to channel
-* close-channel: me parted from channel
-* leave: user leaved channel
-* banned: from channel
-* channel-moderated: channel is in moderated mode.
-* notice: external notice in channel.
+### Definition:
 
-### this.privs.notifications
+The event emitter has this structure:
+
+```
+{
+  raw: RawMessage,
+  type: string,
+  parsedObject?: any
+}
+```
+
+### Message received:
+
+Type: 'message'
+
+ParsedObject: <Message> (projects/ircore/src/lib/domain/message.ts)
+
+Trigger: PRIVMS to target starting with # received.
+
+### Usermode:
+
+Type: 'user-mode'
+
+ParsedObject: ModeParsed
+
+ModeParsed:
+```
+{
+  user: SimplyUser{nick, mode: UModes}
+  channel: Channel{name, hashedName}
+  add: Boolean (mode added or removed)
+  mode: The mode code (for example "v")
+}
+```
+Trigger: /mode command targetting user
+
+### Chanmode:
+
+Type: 'chan-mode'
+
+ParsedObject: ModeParsed
+
+ModeParsed:
+```
+{
+  channel: Channel{name, hashedName}
+  mode: The mode code (for example "m")
+}
+```
+
+Trigger: /mode command targetting channel
+
+### Channel moderated:
+
+Type: 'channel-moderated'
+
+ParsedObject: <void> // TODO: get the channel
+
+Trigger: code 404, when you try to chat in a moderated channel
+
+### Channel topic:
+
+Type: 'topic'
+
+ParsedObject: {channel: Channel, topic: string}
+
+Trigger: code TOPIC, when a channel changes it topic.
+
+### Banned
+
+Type: 'banned'
+
+ParsedObject: <void> // TODO: get the channel
+
+Trigger: when you are banned from a channel.
+
+### Channel list
+
+Type: 'channels'
+
+parsedObject: Channel[]
+
+Trigger: code 319, channels opened.
+
+### Names response /names #channel
+
+Type: 'names'
+
+parsedObject: string[]
+
+Trigger: code 353 command /names response.
+
+### Kicked
+
+Type: 'kick'
+
+parsedObject: {channel: Channel, operator: string, userKicked: SimplyUser}
+
+Trigger: code KICK, when a user is kicked from chanel (can be you).
+
+### New channel
+
+Type: 'new-channel'
+
+parsedObject: {channel: Channel, userJoined: SimplyUser}
+
+Trigger: code JOIN, when you are joined to channel, (by you using /join, or by an operator using /sajoin)
+
+### Join
+
+Type: 'join'
+
+parsedObject: {channel: Channel, userJoined: SimplyUser}
+
+Trigger: code JOIN, when a user (not you) join to a channel.
+
+### Close channel
+
+Type: 'close-channel'
+
+parsedObject: {channel: Channel, userParted: SimplyUser}
+
+Trigger: code PART, when you parted a channel.
+
+### Leave channel
+
+Type: 'leave'
+
+parsedObject: {channel: Channel, userParted: SimplyUser, message: string}
+
+Trigger: code PART, when a user (not you) leave a channel
+
+### Notice:
+
+Type: 'notice'
+
+parsedObject: {channel: Channel, author: string, content: string}
+
+Trigger: when a channel received external message as NOTICE.
+
+## PrivsService emitter
+
+### Definition
+
+The event emitter has this structure:
+
+```
+{
+  raw?: RawMessage,
+  type: string,
+  parsedObject?: any
+}
+```
 
 types:
 * message: private message
@@ -368,3 +527,4 @@ types:
 # IRCParser V3
 
 ## Extensions
+*

@@ -175,7 +175,7 @@ export class IRCParserV3 {
       // FIXME: notification me nick changed
     }
     this.chanSrv.nickChangeInAllChannels(raw.serverID, originalNick, UserData.parseUser(newNick));
-    this.chanSrv.notifications.emit({
+    this.noticeSrv.notifications.emit({
       raw,
       type: 'nick-changed',
       parsedObject: {
