@@ -34,11 +34,8 @@ export class ServerService {
     IRCParserV3.addDefaultListeners();
   }
 
-  public connect(server: ServerData): void {
-    ServerService.servers[server.serverID] = server;
-    server.websocket = new CustomWebSocket();
-    const proto = server.withSSL ? 'wss' : 'ws';
-    const subsc = server.websocket.onStatusChanged().subscribe((status: ConnectionStatusData<any>) => {
+  private sendHeaders(server: ServerData): void {
+    const subsc = server.websocket?.onStatusChanged().subscribe((status: ConnectionStatusData<any>) => {
       if(status.status === ConnectionStatus.CONNECTED) {
         server.websocket?.send('ENCODING UTF-8');
         if (!server.withWebSocket) {
@@ -48,9 +45,16 @@ export class ServerService {
         server.websocket?.send(`CAP LS 302`);
         server.websocket?.send(`NICK ${server.user.nick}`);
         IRCParserV3.setNick(server.user.nick, server.serverID);
-        subsc.unsubscribe();
+        subsc?.unsubscribe();
       }
     });
+  }
+
+  public connect(server: ServerData): void {
+    ServerService.servers[server.serverID] = server;
+    server.websocket = new CustomWebSocket();
+    const proto = server.withSSL ? 'wss' : 'ws';
+    this.sendHeaders(server);
     // cargamos los privados si están habilitados
     this.privSrv.loadMessages(server.serverID);
     this.chanSrv.loadMessages(server.serverID);
@@ -69,7 +73,6 @@ export class ServerService {
         console.error('Received error from stream: ', message.message);
         return;
       }
-      console.log('RAW: ', message);
       IRCParserV3.process(message);
     });
   }
@@ -111,7 +114,11 @@ export class ServerService {
   }
 
   public reconnect(serverID: string): void {
-    this.getServerById(serverID).websocket?.reconnect();
+    const server = this.getServerById(serverID);
+    if(server) {
+      this.sendHeaders(server);
+      server.websocket?.reconnect();
+    }
   }
 
   public getServerById(id: string): ServerData {
