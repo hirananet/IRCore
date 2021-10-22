@@ -254,15 +254,82 @@ This service is designed to handle private messages, and list of privs.
 
 # Event Handling
 
-### this.notices.notifications
+## Introduction
 
-types:
-* motd: message of te day received.
-* require-pass: 464 (usually for znc logins).
-* notice: global notice message recived.
-* uknown: no listener for this message code.
-* pong: pong command received.
-* nick-in-use: this nick is in use
+All of the services has notification event emitter, in order to subscribe to events of type of the service, you can simply use some like this:
+
+```
+constructor(private readonly noticesSrv: NoticesService) {
+  notiesSrv.notifications.subscribe(e => {
+    if(e.type == 'nick-changed') {
+      // do some stuff here.
+    }
+  })
+}
+```
+
+## NoticesService Emitter
+
+### Definition
+
+The event emitter has this structure:
+
+```
+{
+  raw: RawMessage,
+  type: string,
+  parsedObject?: any
+}
+```
+
+### MOTD event
+
+Type: 'motd'
+ParsedObject: <Void>
+
+Trigger: code 375, the first line of MOTD
+
+### END MOTD event
+
+Type: 'endMotd'
+ParsedObject: <void>
+
+Trigger: code 376, the last line of MOTD
+
+### Require pass event
+
+Type: 'require-pass'
+ParsedObject: <void>
+
+Trigger: code 464, usually sended by BNC to request /PASS command.
+
+### Nick in use event
+
+Type: 'nick-in-use'
+ParsedObject: {}
+
+Trigger: code 433, when you try to set a nick in use.
+
+### Notice event
+
+Type: 'notice'
+ParsedObject: <void>
+
+Trigger: code NOTICE, when a message with "NOTICE" received (not triggered if it is a external notice to channel)
+
+### Whois start:
+
+Type: 'whois-start'
+PrsedObject: <void>
+
+Trigger: code 311, first message in response of whois command.
+
+### Uknown message:
+
+Type: 'uknown'
+ParsedObject: <void>
+
+Trigger: all messages with a not known code. (like 666)
 
 ### this.channels.notifications
 
