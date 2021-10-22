@@ -109,7 +109,7 @@ export class ServerService {
   }
 
   public identify(serverID: string, password: string): void {
-    this.sendToServer(serverID, 'PRIVMSG NickServ identify ' + password);
+    this.sendToServer(serverID, 'PRIVMSG NickServ identify ' + this.getServerById(serverID).user.user + ' ' + password);
   }
 
   public serverPass(serverID: string, user: string, password: string): void {
