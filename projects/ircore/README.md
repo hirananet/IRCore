@@ -511,12 +511,56 @@ The event emitter has this structure:
 }
 ```
 
-types:
-* message: private message
-* non-existant: message to non existant nick or channel
-* sside-ignored: server side ignore.
-* away: away message
-* gmode: is messaging you, and you have user mode +g set.
+### Message
+
+Type: 'message'
+
+parsedObject: <Message>
+
+Trigger: when a privmsg is received.
+
+### Server side ignored
+
+Type: 'sside-ignored'
+
+ParsedObject: {author: string, message: string}
+
+Trigger: code 716, when you send message to a user that ignores you.
+
+### Non Existant 
+
+Type: 'non-existant'
+
+ParsedObject: {author: string, message: string}
+
+Trigger: code 401, when you send message to a nick that doesn't exists.
+
+### away
+
+Type: 'away'
+
+ParsedObject: {author: string, message: string}
+
+Trigger: code 301, when you send a message to a user that is in away mode.
+
+### gmode
+
+Type: 'gmode'
+
+ParsedObject: {author: string}
+
+Trigger: code 718, when you receive a message in +g mode (you need to accept that user in order to receive messages):
+
+```:avalon.hira.io 718 Tulkalex Tulkaz ~Harkito@net-j7j.cur.32.45.IP :is messaging you, and you have user mode +g set.
+Use /ACCEPT +Tulkaz to allow.```
+
+### New private:
+
+Type: 'new-priv'
+
+ParsedObject: {chatName: string, serverID: string}
+
+Trigger: when you received a message of another user for first time.
 
 ### this.ListService.notifications
 
