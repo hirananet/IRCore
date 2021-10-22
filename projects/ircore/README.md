@@ -551,8 +551,10 @@ ParsedObject: {author: string}
 
 Trigger: code 718, when you receive a message in +g mode (you need to accept that user in order to receive messages):
 
-```:avalon.hira.io 718 Tulkalex Tulkaz ~Harkito@net-j7j.cur.32.45.IP :is messaging you, and you have user mode +g set.
-Use /ACCEPT +Tulkaz to allow.```
+```
+:avalon.hira.io 718 Tulkalex Tulkaz ~Harkito@net-j7j.cur.32.45.IP :is messaging you, and you have user mode +g set.
+Use /ACCEPT +Tulkaz to allow.
+```
 
 ### New private:
 
