@@ -35,19 +35,26 @@ export class ServerService {
   }
 
   private sendHeaders(server: ServerData): void {
-    const subsc = server.websocket?.onStatusChanged().subscribe((status: ConnectionStatusData<any>) => {
-      if(status.status === ConnectionStatus.CONNECTED) {
-        server.websocket?.send('ENCODING UTF-8');
-        if (!server.withWebSocket) {
-          server.websocket?.send(`HOST ${server.ircServer}`);
+    if(!server.headerSubscribe) {
+      server.headerSubscribe = server.websocket?.onStatusChanged().subscribe((status: ConnectionStatusData<any>) => {
+        if(status.status === ConnectionStatus.CONNECTED) {
+          server.websocket?.send('ENCODING UTF-8');
+          if (!server.withWebSocket) {
+            server.websocket?.send(`HOST ${server.ircServer}`);
+          }
+          server.websocket?.send(`USER ${server.user.user} * * : IRCoreV${ServerService.VERSION}`);
+          server.websocket?.send(`CAP LS 302`);
+          server.websocket?.send(`NICK ${server.user.nick}`);
+          IRCParserV3.setNick(server.user.nick, server.serverID);
+          server.headerSubscribe?.unsubscribe();
+          server.headerSubscribe = undefined;
         }
-        server.websocket?.send(`USER ${server.user.user} * * : IRCoreV${ServerService.VERSION}`);
-        server.websocket?.send(`CAP LS 302`);
-        server.websocket?.send(`NICK ${server.user.nick}`);
-        IRCParserV3.setNick(server.user.nick, server.serverID);
-        subsc?.unsubscribe();
-      }
-    });
+        if(status.status === ConnectionStatus.DISCONNECTED && server.headerSubscribe) {
+          server.headerSubscribe.unsubscribe();
+          server.headerSubscribe = undefined;
+        }
+      });
+    }
   }
 
   public connect(server: ServerData): void {

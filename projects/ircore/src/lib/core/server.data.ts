@@ -1,3 +1,4 @@
+import { Subscription } from 'rxjs';
 import { CustomWebSocket } from './custom.websocket';
 
 export class ServerData {
@@ -24,6 +25,7 @@ export class ServerData {
   public websocket?: CustomWebSocket;
 
   public hncBouncered: boolean = false;
+  public headerSubscribe?: Subscription;
 }
 
 export class User {
