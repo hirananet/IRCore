@@ -496,7 +496,7 @@ export class IRCParserV3 {
         type: 'close-channel',
         parsedObject: {
           channel,
-          userJoined: userParted
+          userParted
         }
       });
     } else {
@@ -507,7 +507,7 @@ export class IRCParserV3 {
         type: 'leave',
         parsedObject: {
           channel,
-          userJoined: userParted,
+          userParted,
           message: partMessage
         }
       });
