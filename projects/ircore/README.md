@@ -562,13 +562,40 @@ ParsedObject: {chatName: string, serverID: string}
 
 Trigger: when you received a message of another user for first time.
 
-### this.ListService.notifications
+## ListService emitter
 
-types:
-* start-list: initialized new list of channels
-* end-list: end of command /LIST and in parsedObject you get the list of channels reference (same than .getList(serverID))
+Structure of emitter: {serverID: string, type: string, parsedObject: any}
+
+### Start list
+
+Type: 'start-list'
+
+ParsedObject: {}
+
+Trigger: when first line of command /LIST is received
+
+### End list
+
+Type: 'end-list'
+
+ParsedObject: <ChannelListData[]> you have here the list of channels reference (same than .getList(serverID))
+
+```
+ChannelListData {
+  public channelName?: string;
+  public channelHash?: string;
+  public description?: string;
+  public members?: number;
+  public modes?: string;
+}
+```
+
+Trigger: when last line of command /LIST is received
 
 # IRCParser V3
 
+<WIP>
+
 ## Extensions
-*
+
+<WIP>
