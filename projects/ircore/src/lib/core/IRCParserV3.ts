@@ -1,3 +1,4 @@
+import { HncService } from './../services/hnc.service';
 import { ListService, ChannelListData } from './../services/list.service';
 import { GlobUserService } from './../services/glob-user.service';
 import { PrivsService } from './../services/privs.service';
@@ -19,6 +20,7 @@ export class IRCParserV3 {
   private static privSrv: PrivsService;
   private static globUsrSrv: GlobUserService;
   private static listSrv: ListService;
+  private static hncSrv: HncService;
   private static currentNick: {[key: string]: string} = {};
 
   private static listeners: {[code: string]: ((raw: RawMessage) => void)[]} = {}
@@ -79,6 +81,11 @@ export class IRCParserV3 {
     this.addListener('671', (c) => this.onPartialUserData(c));
     this.addListener('716', (c) => this.onServerSideIgnore(c));
     this.addListener('718', (c) => this.onRequestPMGmode(c));
+    this.addListener('H00', (c) => this.onHnc(c));
+    this.addListener('H01', (c) => this.onHncPartialInfo(c));
+    this.addListener('H02', (c) => this.onHncPartialInfo(c));
+    this.addListener('H03', (c) => this.onHncPartialInfo(c));
+    this.addListener('H04', (c) => this.onHncPartialInfo(c));
   }
 
   public static setChanSrv(chanSrv: ChannelsService) {
@@ -103,6 +110,10 @@ export class IRCParserV3 {
 
   public static setListService(listSrv: ListService) {
     this.listSrv = listSrv;
+  }
+
+  public static setHncService(hncSrv: HncService) {
+    this.hncSrv = hncSrv;
   }
 
   public static process(socketMessage: MessageData) {
@@ -604,6 +615,30 @@ export class IRCParserV3 {
     this.noticeSrv.notifications.emit({
       raw,
       type: 'uknown'
+    });
+  }
+
+  private static onHnc(raw: RawMessage) {
+    this.hncSrv.notifications.emit({
+      raw,
+      type: 'hnc-connected'
+    });
+  }
+
+  private static onHncPartialInfo(raw: RawMessage) {
+    let type = 'uknown';
+    const types: {[key: string] : string} = {
+      'H01': 'fcm-token',
+      'H02': 'client-nick',
+      'H03': 'gw-connected',
+      'H04': 'gw-nick'
+    };
+    if(types[raw.code]) {
+      type = types[raw.code];
+    }
+    this.hncSrv.notifications.emit({
+      raw,
+      type
     });
   }
 
