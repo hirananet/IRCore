@@ -48,7 +48,7 @@ export class RawMessage {
           od.simplyOrigin = od.identity;
       } else {
           od.server = userOrigin[3];
-          od.identity = userOrigin[2].slice(0, userOrigin[1].length - 1);
+          od.identity = userOrigin[2].slice(0, userOrigin[2].length - 1);
           od.nick = userOrigin[1].slice(0, userOrigin[1].length - 1);
           od.simplyOrigin = od.nick;
       }
