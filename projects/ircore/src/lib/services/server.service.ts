@@ -120,12 +120,13 @@ export class ServerService {
     this.getServerById(serverID).websocket?.disconnect();
   }
 
-  public reconnect(serverID: string): void {
+  public reconnect(serverID: string): ServerData {
     const server = this.getServerById(serverID);
     if(server) {
       this.sendHeaders(server);
       server.websocket?.reconnect();
     }
+    return server;
   }
 
   public getServerById(id: string): ServerData {
