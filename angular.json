@@ -1,8 +1,5 @@
 {
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
-  "cli": {
-    "analytics": "d13526c3-b3f6-4389-8e1c-3d87e681e4f9"
-  },
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
@@ -30,13 +27,17 @@
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
-            "main": "projects/ircore/src/test.ts",
             "tsConfig": "projects/ircore/tsconfig.spec.json",
-            "karmaConfig": "projects/ircore/karma.conf.js"
+            "polyfills": [
+              "zone.js",
+              "zone.js/testing"
+            ]
           }
         }
       }
     }
   },
-  "defaultProject": "ircore"
+  "cli": {
+    "analytics": false
+  }
 }
