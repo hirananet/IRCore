@@ -6,7 +6,7 @@ export class CustomWebSocket {
 
   private messageReceived = new EventEmitter<MessageData>();
   private statusChanged = new EventEmitter<ConnectionStatusData<any>>();
-  private wss: WebSocketSubject<string>;
+  private wss!: WebSocketSubject<string>;
   private onOpenSubject = new Subject();
   private onCloseSubject = new Subject();
   private connected: boolean = false;
