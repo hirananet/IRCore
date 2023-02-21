@@ -7,7 +7,7 @@ https://angular.io/guide/creating-libraries
 
 ## build: 
 
-ng build ircore --prod
+ng build ircore --configuration production
 
 ## publish: 
 

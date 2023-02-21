@@ -42,7 +42,9 @@ export class ChannelsService {
   }
 
   public addUserToChannel(serverID: string, channel: Channel, user: SimplyUser) {
-    // check if channel exists?
+    if(!this.channelsOpened[serverID]) {
+      this.channelsOpened[serverID] = [];
+    }
     const userData = this.gUser.getUser(serverID, user);
     let modes = [];
     if(user.mode != UModes.UNDEFINED) {
@@ -134,6 +136,9 @@ export class ChannelsService {
   }
 
   public addMessageToChannel(serverID: string, channel: Channel, message: Message) {
+    if(!this.channelsOpened[serverID]) {
+      this.channelsOpened[serverID] = [];
+    }
     const chan = this.channelsOpened[serverID].find(chan => chan.name == channel.name);
     if(!chan) {
       console.error('Channel not found #3?', channel, this.channelsOpened[serverID]);
