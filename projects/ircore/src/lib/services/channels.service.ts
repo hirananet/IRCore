@@ -94,6 +94,9 @@ export class ChannelsService {
   }
 
   public getChannel(serverID: string, channel: Channel) {
+    if(!this.channelsOpened[serverID]) {
+      return undefined;
+    }
     const chann = this.channelsOpened[serverID].find(chan => chan.name == channel.name);
     if(!chann) {
       console.error('Error getting channel: ', channel, this.channelsOpened[serverID])
